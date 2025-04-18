@@ -1,0 +1,29 @@
+/* Dans src/main/resources/styles.css */
+.table-view {
+    -fx-background-color: #ffffff;
+    -fx-table-cell-border-color: transparent;
+}
+
+.table-view .column-header {
+    -fx-background-color: #2196F3;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #BBDEFB;
+    -fx-text-fill: #212121;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #f9f9f9;
+}
+
+.table-row-cell:even {
+    -fx-background-color: #ffffff;
+}
+
+.status-bar {
+    -fx-background-color: #f4f4f4;
+    -fx-padding: 5 10 5 10;
+}

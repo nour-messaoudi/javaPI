@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="tn.esprit.controllers.PostController">
+    <top>
+        <ToolBar>
+            <Button text="Nouveau Post" onAction="#showCreatePost"/>
+            <Button text="Modifier" onAction="#showEditPost"/>
+            <Button text="Supprimer" onAction="#showDeletePost"/>
+        </ToolBar>
+    </top>
+    <center>
+        <TableView fx:id="postsTable">
+            <columns>
+                <TableColumn text="ID" fx:id="idCol"/>
+                <TableColumn text="Titre" fx:id="titreCol"/>
+                <TableColumn text="Contenu" fx:id="contenuCol"/>
+                <TableColumn text="Auteur" fx:id="auteurCol"/>
+                <TableColumn text="Date" fx:id="dateCol"/>
+            </columns>
+        </TableView>
+    </center>
+</BorderPane>

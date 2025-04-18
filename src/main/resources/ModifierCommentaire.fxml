@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="tn.esprit.controllers.ModifierCommentaireController">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+    <spacing>20</spacing>
+
+    <Label text="Modifier Commentaire" style="-fx-font-size: 16; -fx-font-weight: bold;"/>
+
+    <GridPane hgap="10" vgap="10">
+        <padding>
+            <Insets top="10" right="10" bottom="10" left="10"/>
+        </padding>
+
+        <!-- Champ Post ID (peut être désactivé ou en lecture seule) -->
+        <Label text="Post ID:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="postIdField" GridPane.rowIndex="0" GridPane.columnIndex="1" editable="false"/>
+
+        <!-- Champ Contenu -->
+        <Label text="Contenu:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <TextArea fx:id="contenuField" GridPane.rowIndex="1" GridPane.columnIndex="1"
+                  prefRowCount="4" wrapText="true"/>
+
+        <!-- Champ Auteur -->
+        <Label text="Auteur:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <TextField fx:id="auteurField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+    </GridPane>
+
+    <HBox spacing="20" alignment="CENTER_RIGHT">
+        <!-- Bouton Supprimer -->
+        <Button text="Supprimer" style="-fx-background-color: #f44336; -fx-text-fill: white;"
+                onAction="#handleDelete"/>
+
+        <!-- Bouton Annuler -->
+        <Button text="Annuler" onAction="#handleCancel"/>
+
+        <!-- Bouton Enregistrer -->
+        <Button text="Enregistrer" style="-fx-background-color: #2196F3; -fx-text-fill: white;"
+                onAction="#handleUpdate"/>
+    </HBox>
+</VBox>
