@@ -5,15 +5,19 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import tn.esprit.controllers.MenuPrincipalController;
+import tn.esprit.controllers.PostController;
 import tn.esprit.controllers.TopicController;
+
 
 public class MainAPP extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/AfficherTopic.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/MenuPrincipal.fxml"));
         Parent root = loader.load();
 
-        TopicController controller = loader.getController();
+
+        MenuPrincipalController controller = loader.getController();
         controller.setPrimaryStage(primaryStage);
 
         primaryStage.setTitle("Gestion des Topics");

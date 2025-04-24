@@ -11,14 +11,17 @@ public class Post {
     private final StringProperty auteur = new SimpleStringProperty();
     private final ObjectProperty<LocalDateTime> dateCreation = new SimpleObjectProperty<>();
 
-    public Post(int id, int topicId, String titre, String contenu, String auteur, LocalDateTime dateCreation) {}
+    public Post(int id, int topicId, String titre, String contenu, String auteur, LocalDateTime dateCreation) {
+        this.id.set(id);
+        this.topicId.set(topicId);
+        this.titre.set(titre);
+        this.contenu.set(contenu);
+        this.auteur.set(auteur);
+        this.dateCreation.set(dateCreation);
+    }
 
-    public Post(int topicId, String titre, String contenu, String auteur, LocalDateTime dateCreation) {
-        setTopicId(topicId);
-        setTitre(titre);
-        setContenu(contenu);
-        setAuteur(auteur);
-        setDateCreation(dateCreation);
+    public Post() {
+        // Constructeur par défaut : rien à initialiser ici
     }
 
     // Property getters
@@ -32,14 +35,30 @@ public class Post {
     // Getters/Setters standards
     public int getId() { return id.get(); }
     public void setId(int id) { this.id.set(id); }
+
     public int getTopicId() { return topicId.get(); }
     public void setTopicId(int topicId) { this.topicId.set(topicId); }
+
     public String getTitre() { return titre.get(); }
     public void setTitre(String titre) { this.titre.set(titre); }
+
     public String getContenu() { return contenu.get(); }
     public void setContenu(String contenu) { this.contenu.set(contenu); }
+
     public String getAuteur() { return auteur.get(); }
     public void setAuteur(String auteur) { this.auteur.set(auteur); }
+
     public LocalDateTime getDateCreation() { return dateCreation.get(); }
     public void setDateCreation(LocalDateTime dateCreation) { this.dateCreation.set(dateCreation); }
+
+    public void setTopic(Topic selectedTopic) {
+        if (selectedTopic != null) {
+            setTopicId(selectedTopic.getId()); // Assure-toi que Topic a un getId()
+        }
+    }
+
+    @Override
+    public String toString() {
+        return titre.get(); // Pour affichage dans ListView par exemple
+    }
 }

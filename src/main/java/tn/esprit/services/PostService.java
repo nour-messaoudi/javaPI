@@ -8,6 +8,7 @@ import tn.esprit.util.MaConnexion;
 
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class PostService implements iService<Post> {
     Connection cnx = MaConnexion.getInstance().getCnx();
@@ -155,5 +156,16 @@ public class PostService implements iService<Post> {
             throw new RuntimeException("Failed to fetch posts by topic", e);
         }
         return posts;
+    }
+
+    public List<Post> getByTopicId(int topicId) {
+        return List.of();
+    }
+
+    public List<Post> getAllPosts() {
+        return List.of();
+    }
+
+    public void ajouter(Post newPost) {
     }
 }

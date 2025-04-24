@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Button?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="tn.esprit.controllers.MenuPrincipalController"
+      spacing="20" alignment="CENTER">
+
+    <Button text="Afficher Topics" onAction="#handleAfficherTopics"/>
+    <Button text="Afficher Posts" onAction="#handleAfficherPosts"/>
+    <Button text="Afficher Commentaires" onAction="#handleAfficherCommentaires"/>
+</VBox>

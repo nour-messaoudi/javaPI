@@ -7,6 +7,7 @@ import tn.esprit.interfaces.iService;
 import tn.esprit.util.MaConnexion;
 
 import java.sql.*;
+import java.util.List;
 
 public class TopicService implements iService<Topic> {
     Connection cnx = MaConnexion.getInstance().getCnx();
@@ -123,5 +124,9 @@ public class TopicService implements iService<Topic> {
             throw new RuntimeException("Failed to fetch topic", e);
         }
         return null;
+    }
+
+    public List<Topic> getAllTopics() {
+        return List.of();
     }
 }

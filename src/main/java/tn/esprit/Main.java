@@ -21,7 +21,7 @@ public class Main {
         topicService.add(topic);
 
         // Test Post
-        Post post = new Post(topic.getId(), "Premier Post", "Contenu du post", "User1", LocalDateTime.now());
+        Post post = new Post();
         postService.add(post);
 
         // Test Commentaire
