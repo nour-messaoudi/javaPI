@@ -3,23 +3,27 @@ package tn.esprit.controllers;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import tn.esprit.entities.Commentaire;
 import tn.esprit.entities.Post;
-import tn.esprit.entities.Topic;
+import tn.esprit.services.CommentaireService;
 import tn.esprit.services.PostService;
-import tn.esprit.services.TopicService;
 
+import java.sql.Timestamp;
 import java.util.List;
 
-public class CreerPost {
+import static com.mysql.cj.protocol.a.MysqlTextValueDecoder.getTimestamp;
+import static javax.swing.UIManager.getInt;
+import static javax.swing.UIManager.getString;
 
-    @FXML private TextField titreField;
+public class CreerCommentaire {
+
     @FXML private TextArea contenuField;
     @FXML private TextField auteurField;
-    @FXML private ComboBox<Topic> topicComboBox;
+    @FXML private ComboBox<Post> postComboBox;
 
     private Stage dialogStage;
+    private final CommentaireService commentaireService = new CommentaireService();
     private final PostService postService = new PostService();
-    private final TopicService topicService = new TopicService();
 
     public void setDialogStage(Stage stage) {
         this.dialogStage = stage;
@@ -27,22 +31,25 @@ public class CreerPost {
 
     @FXML
     private void initialize() {
-        List<Topic> topics = topicService.getAllTopics();
-        topicComboBox.getItems().addAll(topics);
+        List<Post> posts = postService.getAllPosts();
+        postComboBox.getItems().addAll(posts);
     }
 
     @FXML
     private void handleCreate() {
         if (validateInput()) {
-            Post newPost = new Post();
-            newPost.setTitre(titreField.getText());
-            newPost.setContenu(contenuField.getText());
-            newPost.setAuteur(auteurField.getText());
-            newPost.setTopic(topicComboBox.getValue());
+            Commentaire commentaire = new Commentaire(getInt("id"),getString("contenu"),getString("auteur"), getTimestamp("dateCreation").toLocalDateTime(),getInt("topic_id"));
+            commentaire.setContenu(contenuField.getText());
+            commentaire.setAuteur(auteurField.getText());
+            commentaire.setPost(postComboBox.getValue());
 
-            postService.ajouter(newPost);
+            commentaireService.ajouter(commentaire);
             dialogStage.close();
         }
+    }
+
+    private Timestamp getTimestamp(String dateCreation) {
+        return null;
     }
 
     @FXML
@@ -53,17 +60,14 @@ public class CreerPost {
     private boolean validateInput() {
         StringBuilder errors = new StringBuilder();
 
-        if (titreField.getText().isEmpty()) {
-            errors.append("- Titre obligatoire\n");
-        }
         if (contenuField.getText().isEmpty()) {
             errors.append("- Contenu obligatoire\n");
         }
         if (auteurField.getText().isEmpty()) {
             errors.append("- Auteur obligatoire\n");
         }
-        if (topicComboBox.getValue() == null) {
-            errors.append("- Sujet (Topic) obligatoire\n");
+        if (postComboBox.getValue() == null) {
+            errors.append("- Post associé obligatoire\n");
         }
 
         if (errors.length() > 0) {
@@ -80,9 +84,5 @@ public class CreerPost {
         alert.setHeaderText(null);
         alert.setContentText(content);
         alert.showAndWait();
-    }
-
-    public void setPostController(PostController postController) {
-        // Si besoin : postController.refreshPosts() après ajout
     }
 }

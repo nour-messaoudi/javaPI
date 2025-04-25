@@ -3,22 +3,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.esprit.controllers.CommentaireController">
-    <top>
-        <ToolBar>
-            <Button text="Nouveau Commentaire" onAction="#showCreateCommentaire"/>
-            <Button text="Supprimer" onAction="#handleDeleteCommentaire"/>
-        </ToolBar>
-    </top>
-    <center>
-        <TableView fx:id="commentairesTable">
-            <columns>
-                <TableColumn text="ID" fx:id="idCol"/>
-                <TableColumn text="Post ID" fx:id="postIdCol"/>
-                <TableColumn text="Contenu" fx:id="contenuCol"/>
-                <TableColumn text="Auteur" fx:id="auteurCol"/>
-                <TableColumn text="Date" fx:id="dateCol"/>
-            </columns>
-        </TableView>
-    </center>
-</BorderPane>
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="tn.esprit.controllers.AfficherCommentaireController">
+    <children>
+        <ListView fx:id="commentaireListView" layoutX="14.0" layoutY="14.0" prefHeight="200.0" prefWidth="300.0" />
+        <Button layoutX="14.0" layoutY="225.0" text="Ajouter Commentaire" onAction="#ajouterCommentaire" />
+    </children>
+</AnchorPane>

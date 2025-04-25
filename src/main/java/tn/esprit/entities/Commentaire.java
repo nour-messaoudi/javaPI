@@ -12,7 +12,7 @@ public class Commentaire {
     private LocalDateTime dateCreation;
 
     //constructor
-    public Commentaire() {
+    public Commentaire(int id, String contenu, String auteur, LocalDateTime dateCreation, int topicId) {
     }
 
     public Commentaire(int postId, String contenu, String auteur, LocalDateTime dateCreation) {
@@ -82,5 +82,16 @@ public class Commentaire {
                 ", auteur='" + auteur + '\'' +
                 ", dateCreation=" + dateCreation +
                 '}';
+    }
+
+    public void setPost(Post value) {
+
+    }
+
+    public void setTopic(Topic topicActuel) {
+    }
+
+    public int getTopicId() {
+        return 0;
     }
 }

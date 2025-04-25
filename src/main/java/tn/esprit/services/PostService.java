@@ -55,8 +55,19 @@ public class PostService {
 
     public void add(Post post) {
     }
+    public void supprimer(int id) {
+        String req = "DELETE FROM post WHERE id = ?";
+        try {
+            PreparedStatement ps = cnx.prepareStatement(req);
+            ps.setInt(1, id);
+            ps.executeUpdate();
+            System.out.println("Post supprimé avec succès.");
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la suppression : " + e.getMessage());
+        }
+    }
+
+    public List<Post> getAllPosts() {
+        return List.of();
+    }
 }
-
-
-
-

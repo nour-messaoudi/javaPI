@@ -1,191 +1,87 @@
 package tn.esprit.controllers;
 
-import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import tn.esprit.entities.Commentaire;
+import tn.esprit.entities.Topic;
 import tn.esprit.services.CommentaireService;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 
+import static com.mysql.cj.protocol.a.MysqlTextValueDecoder.getTimestamp;
+import static javax.swing.UIManager.getInt;
+import static javax.swing.UIManager.getString;
+
 public class CommentaireController {
-    @FXML private TableView<Commentaire> commentairesTable;
-    @FXML private TableColumn<Commentaire, Integer> idCol;
-    @FXML private TableColumn<Commentaire, Integer> postIdCol;
+
+    @FXML private TableView<Commentaire> commentaireTable;
     @FXML private TableColumn<Commentaire, String> contenuCol;
     @FXML private TableColumn<Commentaire, String> auteurCol;
     @FXML private TableColumn<Commentaire, String> dateCol;
-
-    @FXML private TextArea contenuField;
-    @FXML private TextField auteurField;
-    @FXML private ComboBox<Integer> postIdCombo;
+    @FXML private TextArea commentaireInput;
+    @FXML private Button ajouterBtn;
 
     private final CommentaireService commentaireService = new CommentaireService();
-    private Stage primaryStage;
-    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+    private Topic topicActuel;
 
-    public void setPrimaryStage(Stage stage) {
-        this.primaryStage = stage;
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+    public void setTopic(Topic topic) {
+        this.topicActuel = topic;
+        loadCommentaires();
     }
 
     @FXML
     private void initialize() {
-        configureTableColumns();
-        loadPosts();
-        refreshCommentaires();
-    }
-
-    private void configureTableColumns() {
-        idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
-        postIdCol.setCellValueFactory(new PropertyValueFactory<>("postId"));
-        contenuCol.setCellValueFactory(new PropertyValueFactory<>("contenu"));
-        auteurCol.setCellValueFactory(new PropertyValueFactory<>("auteur"));
-        dateCol.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getDateCreation().format(dateFormatter))
+        contenuCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getContenu()));
+        auteurCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getAuteur()));
+        dateCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
+                data.getValue().getDateCreation().format(formatter))
         );
-        commentairesTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-    }
-
-    private void loadPosts() {
-        // À remplacer par votre service de posts
-        postIdCombo.getItems().addAll(1, 2, 3); // Exemple basique
     }
 
     @FXML
-    private void showCreateCommentaire() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/CreerCommentaire.fxml"));
-            Parent root = loader.load();
-
-            Stage dialogStage = new Stage();
-            dialogStage.setTitle("Nouveau Commentaire");
-            dialogStage.initModality(Modality.WINDOW_MODAL);
-            dialogStage.initOwner(primaryStage);
-            dialogStage.setScene(new Scene(root));
-
-            CommentaireController controller = loader.getController();
-            controller.setPrimaryStage(primaryStage);
-            controller.initializeForm();
-
-            dialogStage.showAndWait();
-            refreshCommentaires();
-        } catch (IOException e) {
-            showErrorAlert("Erreur de chargement", "Impossible d'ouvrir le formulaire de création", e);
+    private void ajouterCommentaire() {
+        String contenu = commentaireInput.getText().trim();
+        if (contenu.isEmpty()) {
+            showAlert("Champ vide", "Veuillez saisir un commentaire.");
+            return;
         }
+
+        Commentaire commentaire = new Commentaire(getInt("id"),getString("contenu"),getString("auteur"), getTimestamp("dateCreation").toLocalDateTime(), getInt("topic_id"));
+        commentaire.setContenu(contenu);
+        commentaire.setAuteur("Utilisateur"); // À remplacer par l’utilisateur courant si nécessaire
+        commentaire.setTopic(topicActuel);
+
+        commentaireService.ajouter(commentaire);
+        commentaireInput.clear();
+        loadCommentaires();
     }
 
-    @FXML
-    private void handleCreateCommentaire() {
-        if (validateForm()) {
-            Commentaire newCommentaire = new Commentaire(
-                    postIdCombo.getValue(),
-                    contenuField.getText(),
-                    auteurField.getText(),
-                    LocalDateTime.now()
+    private OffsetDateTime getTimestamp(String dateCreation) {
+        return null;
+    }
+
+    private void loadCommentaires() {
+        if (topicActuel != null) {
+            ObservableList<Commentaire> commentaires = FXCollections.observableArrayList(
+                    commentaireService.getCommentairesParTopic(topicActuel.getId())
             );
-
-            try {
-                commentaireService.add(newCommentaire);
-                showSuccessAlert("Commentaire créé avec succès !");
-                closeCurrentWindow();
-                refreshCommentaires();
-            } catch (Exception e) {
-                showErrorAlert("Erreur de création", "Échec de la création du commentaire", e);
-            }
+            commentaireTable.setItems(commentaires);
         }
     }
 
-    @FXML
-    private void handleDeleteCommentaire() {
-        Commentaire selectedCommentaire = commentairesTable.getSelectionModel().getSelectedItem();
-        if (selectedCommentaire != null) {
-            if (showConfirmationDialog("Confirmer la suppression",
-                    "Voulez-vous vraiment supprimer ce commentaire ?")) {
-
-                commentaireService.delete(selectedCommentaire);
-                refreshCommentaires();
-                showSuccessAlert("Commentaire supprimé avec succès !");
-            }
-        } else {
-            showWarningAlert("Aucune sélection", "Veuillez sélectionner un commentaire à supprimer");
-        }
-    }
-
-    private void initializeForm() {
-        contenuField.clear();
-        auteurField.clear();
-        postIdCombo.getSelectionModel().selectFirst();
-    }
-
-    private boolean validateForm() {
-        StringBuilder errors = new StringBuilder();
-
-        if (contenuField.getText().isEmpty()) {
-            errors.append("- Contenu obligatoire\n");
-        }
-        if (auteurField.getText().isEmpty()) {
-            errors.append("- Auteur obligatoire\n");
-        }
-        if (postIdCombo.getValue() == null) {
-            errors.append("- Post obligatoire\n");
-        }
-
-        if (errors.length() > 0) {
-            showWarningAlert("Erreur de validation", errors.toString());
-            return false;
-        }
-        return true;
+    private void showAlert(String titre, String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(titre);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     public void refreshCommentaires() {
-        ObservableList<Commentaire> commentaires = (ObservableList<Commentaire>) commentaireService.getAll();
-        commentairesTable.setItems(commentaires);
-    }
-
-    // Méthodes utilitaires pour les dialogues (identique aux autres contrôleurs)
-    private void showSuccessAlert(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Succès");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    private void showWarningAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    private void showErrorAlert(String title, String header, Exception e) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(header);
-        alert.setContentText(e.getMessage());
-        alert.showAndWait();
-    }
-
-    private boolean showConfirmationDialog(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        return alert.showAndWait().get() == ButtonType.OK;
-    }
-
-    @FXML
-    private void closeCurrentWindow() {
-        ((Stage) contenuField.getScene().getWindow()).close();
     }
 }
