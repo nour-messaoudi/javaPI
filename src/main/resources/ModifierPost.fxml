@@ -1,39 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
 
-<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="tn.esprit.controllers.ModifierPostController">
-    <padding>
-        <Insets top="20" right="20" bottom="20" left="20"/>
-    </padding>
-    <spacing>20</spacing>
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="tn.esprit.controllers.ModifierPostController">
+    <center>
+        <VBox spacing="10.0" padding="20.0">
+            <Label text="Modifier le Post" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
 
-    <Label text="Modifier Post" style="-fx-font-size: 16; -fx-font-weight: bold;"/>
+            <HBox spacing="10">
+                <Label text="Titre:" minWidth="100"/>
+                <TextField fx:id="titreField" HBox.hgrow="ALWAYS"/>
+            </HBox>
 
-    <GridPane hgap="10" vgap="10">
-        <padding>
-            <Insets top="10" right="10" bottom="10" left="10"/>
-        </padding>
+            <HBox spacing="10">
+                <Label text="Contenu:" minWidth="100" alignment="TOP_LEFT"/>
+                <TextArea fx:id="contenuField" prefRowCount="5" HBox.hgrow="ALWAYS"/>
+            </HBox>
 
-        <Label text="Titre:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-        <TextField fx:id="titreField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+            <HBox spacing="10">
+                <Label text="Auteur:" minWidth="100"/>
+                <TextField fx:id="auteurField" HBox.hgrow="ALWAYS"/>
+            </HBox>
 
-        <Label text="Contenu:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-        <TextArea fx:id="contenuField" GridPane.rowIndex="1" GridPane.columnIndex="1"
-                  prefRowCount="5" wrapText="true"/>
-
-        <Label text="Auteur:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-        <TextField fx:id="auteurField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
-    </GridPane>
-
-    <HBox spacing="20" alignment="CENTER_RIGHT">
-        <Button text="Supprimer" style="-fx-background-color: #f44336; -fx-text-fill: white;"
-                onAction="#handleDelete"/>
-        <Button text="Annuler" onAction="#handleCancel"/>
-        <Button text="Enregistrer" style="-fx-background-color: #2196F3; -fx-text-fill: white;"
-                onAction="#handleUpdate"/>
-    </HBox>
-</VBox>
+            <HBox spacing="15" alignment="CENTER_RIGHT">
+                <Button text="Mettre à jour" onAction="#handleUpdate"/>
+                <Button text="Annuler" onAction="#handleCancel"/>
+            </HBox>
+        </VBox>
+    </center>
+</BorderPane>

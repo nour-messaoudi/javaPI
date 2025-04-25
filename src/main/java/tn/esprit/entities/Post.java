@@ -20,11 +20,8 @@ public class Post {
         this.dateCreation.set(dateCreation);
     }
 
-    public Post() {
-        // Constructeur par défaut : rien à initialiser ici
-    }
+    public Post() {}
 
-    // Property getters
     public IntegerProperty idProperty() { return id; }
     public IntegerProperty topicIdProperty() { return topicId; }
     public StringProperty titreProperty() { return titre; }
@@ -32,33 +29,19 @@ public class Post {
     public StringProperty auteurProperty() { return auteur; }
     public ObjectProperty<LocalDateTime> dateCreationProperty() { return dateCreation; }
 
-    // Getters/Setters standards
     public int getId() { return id.get(); }
     public void setId(int id) { this.id.set(id); }
-
     public int getTopicId() { return topicId.get(); }
     public void setTopicId(int topicId) { this.topicId.set(topicId); }
-
     public String getTitre() { return titre.get(); }
     public void setTitre(String titre) { this.titre.set(titre); }
-
     public String getContenu() { return contenu.get(); }
     public void setContenu(String contenu) { this.contenu.set(contenu); }
-
     public String getAuteur() { return auteur.get(); }
     public void setAuteur(String auteur) { this.auteur.set(auteur); }
-
     public LocalDateTime getDateCreation() { return dateCreation.get(); }
     public void setDateCreation(LocalDateTime dateCreation) { this.dateCreation.set(dateCreation); }
 
-    public void setTopic(Topic selectedTopic) {
-        if (selectedTopic != null) {
-            setTopicId(selectedTopic.getId()); // Assure-toi que Topic a un getId()
-        }
-    }
-
-    @Override
-    public String toString() {
-        return titre.get(); // Pour affichage dans ListView par exemple
+    public void setTopic(Topic value) {
     }
 }

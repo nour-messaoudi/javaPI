@@ -1,85 +1,139 @@
 package tn.esprit.controllers;
 
-import javafx.collections.FXCollections;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import tn.esprit.entities.Post;
-import tn.esprit.entities.Topic;
 import tn.esprit.services.PostService;
-import tn.esprit.services.TopicService;
 
-import java.net.URL;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 
-public class PostController implements Initializable {
-
-    @FXML
-    private TextField titreField;
-
-    @FXML
-    private TextArea contenuField;
-
-    @FXML
-    private ComboBox<Topic> topicIdCombo;
-
-    @FXML
-    private ListView<Post> postListView;
+public class PostController {
+    @FXML private TableView<Post> postsTable;
+    @FXML private TableColumn<Post, Integer> idCol;
+    @FXML private TableColumn<Post, String> titreCol;
+    @FXML private TableColumn<Post, String> contenuCol;
+    @FXML private TableColumn<Post, String> auteurCol;
+    @FXML private TableColumn<Post, String> dateCol;
 
     private final PostService postService = new PostService();
-    private final TopicService topicService = new TopicService();
+    private Stage primaryStage;
+    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        loadTopics();
-        loadPosts();
-    }
-
-    private void loadTopics() {
-        List<Topic> topics = topicService.getAllTopics();
-        ObservableList<Topic> topicList = FXCollections.observableArrayList(topics);
-        topicIdCombo.setItems(topicList);
-    }
-
-    private void loadPosts() {
-        List<Post> posts = postService.getAllPosts();
-        ObservableList<Post> postList = FXCollections.observableArrayList(posts);
-        postListView.setItems(postList);
+    public void setPrimaryStage(Stage stage) {
+        this.primaryStage = stage;
     }
 
     @FXML
-    private void handleAddPost() {
-        String titre = titreField.getText();
-        String contenu = contenuField.getText();
-        Topic selectedTopic = topicIdCombo.getValue();
+    private void initialize() {
+        configureTableColumns();
+        refreshPosts();
+    }
 
-        if (titre.isEmpty() || contenu.isEmpty() || selectedTopic == null) {
-            System.out.println("Tous les champs doivent être remplis.");
-            return;
+    private void configureTableColumns() {
+        idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+        titreCol.setCellValueFactory(new PropertyValueFactory<>("titre"));
+        contenuCol.setCellValueFactory(new PropertyValueFactory<>("contenu"));
+        auteurCol.setCellValueFactory(new PropertyValueFactory<>("auteur"));
+        dateCol.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getDateCreation().format(dateFormatter))
+        );
+        postsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+    }
+
+    @FXML
+    private void showCreatePost() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/CreerPost.fxml"));
+            Parent root = loader.load();
+
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Créer un nouveau Post");
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+            dialogStage.setScene(new Scene(root));
+
+            CreerPost controller = loader.getController();
+            controller.setDialogStage(dialogStage);
+            controller.setPostController(this);
+
+            dialogStage.showAndWait();
+        } catch (IOException e) {
+            showAlert("Erreur", "Impossible d'ouvrir le formulaire", e.getMessage());
         }
+    }
 
-        Post newPost = new Post();
-        newPost.setTitre(titre);
-        newPost.setContenu(contenu);
-        newPost.setTopic(selectedTopic);
+    @FXML
+    private void showEditPost() {
+        Post selectedPost = postsTable.getSelectionModel().getSelectedItem();
+        if (selectedPost != null) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/ModifierPost.fxml"));
+                Parent root = loader.load();
 
-        postService.ajouter(newPost);
-        loadPosts();
+                ModifierPostController controller = loader.getController();
+                controller.setPostData(selectedPost);
+                controller.setPrimaryStage(primaryStage);
+                controller.setPostController(this);
 
-        titreField.clear();
-        contenuField.clear();
-        topicIdCombo.getSelectionModel().clearSelection();
+                Stage dialogStage = new Stage();
+                dialogStage.setTitle("Modifier Post");
+                dialogStage.initModality(Modality.WINDOW_MODAL);
+                dialogStage.initOwner(primaryStage);
+                dialogStage.setScene(new Scene(root));
+                dialogStage.showAndWait();
+            } catch (IOException e) {
+                showAlert("Erreur", "Impossible d'ouvrir l'éditeur", e.getMessage());
+            }
+        } else {
+            showAlert("Aucune sélection", "Veuillez sélectionner un post à modifier", "");
+        }
+    }
+
+    @FXML
+    private void showDeletePost() {
+        Post selectedPost = postsTable.getSelectionModel().getSelectedItem();
+        if (selectedPost != null) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/SupprimerPost.fxml"));
+                Parent root = loader.load();
+
+                SupprimerPostController controller = loader.getController();
+                controller.setPostData(selectedPost);
+                controller.setPostController(this);
+
+                Stage dialogStage = new Stage();
+                dialogStage.setTitle("Confirmation de suppression");
+                dialogStage.initModality(Modality.WINDOW_MODAL);
+                dialogStage.initOwner(primaryStage);
+                dialogStage.setScene(new Scene(root));
+                dialogStage.showAndWait();
+            } catch (IOException e) {
+                showAlert("Erreur", "Impossible d'ouvrir la confirmation", e.getMessage());
+            }
+        } else {
+            showAlert("Aucune sélection", "Veuillez sélectionner un post à supprimer", "");
+        }
     }
 
     public void refreshPosts() {
+        ObservableList<Post> posts = (ObservableList<Post>) postService.getAll();
+        postsTable.setItems(posts);
     }
 
-    public void handleLoadPosts(ActionEvent actionEvent) {
+    private void showAlert(String title, String header, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 }

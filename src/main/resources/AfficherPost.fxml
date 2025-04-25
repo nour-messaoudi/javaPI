@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="tn.esprit.controllers.PostController">
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="tn.esprit.controllers.AfficherPostController">
     <children>
-        <VBox spacing="10" alignment="CENTER" layoutX="14" layoutY="14" prefWidth="600" prefHeight="400">
-            <ComboBox fx:id="topicIdCombo" promptText="Choisir un topic" />
-            <Button text="Charger les posts" onAction="#handleLoadPosts" />
-        </VBox>
+        <TableView fx:id="tableViewPosts" layoutX="14.0" layoutY="14.0" prefHeight="400.0" prefWidth="700.0">
+            <columns>
+                <TableColumn fx:id="colId" text="ID" prefWidth="50.0" />
+                <TableColumn fx:id="colTitre" text="Titre" prefWidth="150.0" />
+                <TableColumn fx:id="colContenu" text="Contenu" prefWidth="200.0" />
+                <TableColumn fx:id="colAuteur" text="Auteur" prefWidth="150.0" />
+                <TableColumn fx:id="colDateCreation" text="Date Création" prefWidth="150.0" />
+            </columns>
+        </TableView>
     </children>
 </AnchorPane>

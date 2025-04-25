@@ -129,4 +129,8 @@ public class TopicService implements iService<Topic> {
     public List<Topic> getAllTopics() {
         return List.of();
     }
+
+    public void delete(int id) {
+
+    }
 }

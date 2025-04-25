@@ -34,7 +34,7 @@ public class Main {
         topics.forEach(System.out::println);
 
         System.out.println("\nListe des posts:");
-        ObservableList<Post> posts = postService.getAll();
+        ObservableList<Post> posts = (ObservableList<Post>) postService.getAll();
         posts.forEach(System.out::println);
 
         System.out.println("\nListe des commentaires:");

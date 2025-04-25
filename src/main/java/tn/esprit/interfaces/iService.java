@@ -8,4 +8,6 @@ public interface iService<T> {
     void delete(T t);
     ObservableList<T> getAll(); // Changé de List à ObservableList
     T getOne(int id);
+
+    void delete(int id);
 }

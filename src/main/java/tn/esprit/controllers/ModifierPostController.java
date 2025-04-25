@@ -1,4 +1,3 @@
-
 package tn.esprit.controllers;
 
 import javafx.fxml.FXML;
@@ -8,13 +7,13 @@ import tn.esprit.entities.Post;
 import tn.esprit.services.PostService;
 
 public class ModifierPostController {
+
     @FXML private TextField titreField;
     @FXML private TextArea contenuField;
     @FXML private TextField auteurField;
 
     private Post currentPost;
     private Stage primaryStage;
-    private PostController postController;
     private final PostService postService = new PostService();
 
     public void setPostData(Post post) {
@@ -28,28 +27,32 @@ public class ModifierPostController {
         this.primaryStage = stage;
     }
 
-    public void setPostController(PostController controller) {
-        this.postController = controller;
-    }
-
     @FXML
     private void handleUpdate() {
-        currentPost.setTitre(titreField.getText());
-        currentPost.setContenu(contenuField.getText());
-        currentPost.setAuteur(auteurField.getText());
 
-        postService.update(currentPost);
-        postController.refreshPosts();
-        primaryStage.close();
-    }
-
-    @FXML
-    private void handleDelete() {
-        // Implémentez la logique de suppression comme pour Topic
     }
 
     @FXML
     private void handleCancel() {
         primaryStage.close();
+    }
+
+    private boolean validateInput() {
+        if (titreField.getText().isEmpty() || contenuField.getText().isEmpty() || auteurField.getText().isEmpty()) {
+            showAlert("Erreur", "Tous les champs sont obligatoires !");
+            return false;
+        }
+        return true;
+    }
+
+    private void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+    public void setPostController(PostController postController) {
     }
 }

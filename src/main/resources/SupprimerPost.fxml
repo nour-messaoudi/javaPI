@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Alert?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+
+<?import javafx.scene.layout.HBox?>
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="tn.esprit.controllers.SupprimerPostController" spacing="20" alignment="CENTER" style="-fx-padding: 20;">
+    <Label fx:id="confirmationLabel" text="Voulez-vous vraiment supprimer ce post ?" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+    <HBox spacing="10" alignment="CENTER">
+        <Button fx:id="confirmerButton" text="Confirmer" onAction="#confirmerSuppression"/>
+        <Button fx:id="annulerButton" text="Annuler" onAction="#annulerSuppression"/>
+    </HBox>
+</VBox>

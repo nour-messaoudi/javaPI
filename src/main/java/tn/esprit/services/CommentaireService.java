@@ -126,6 +126,11 @@ public class CommentaireService implements iService<Commentaire> {
         return null;
     }
 
+    @Override
+    public void delete(int id) {
+
+    }
+
     public ObservableList<Commentaire> getByPost(int postId) {
         ObservableList<Commentaire> commentaires = FXCollections.observableArrayList();
         String req = "SELECT * FROM `commentaire` WHERE `post_id`=? ORDER BY `dateCreation` DESC";

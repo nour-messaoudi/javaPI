@@ -1,16 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox spacing="10" padding="20" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="tn.esprit.controllers.PostController">
-    <Label text="Créer un nouveau Post"/>
-    <TextField fx:id="titreField" promptText="Titre"/>
-    <TextArea fx:id="contenuField" promptText="Contenu"/>
-    <TextField fx:id="auteurField" promptText="Auteur"/>
-    <ComboBox fx:id="topicIdCombo" promptText="Sélectionner un Topic"/>
-    <HBox spacing="10">
-        <Button text="Créer" onAction="#handleCreatePost"/>
-        <Button text="Annuler" onAction="#closeCurrentWindow"/>
-    </HBox>
-</VBox>
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="tn.esprit.controllers.CreerPost">
+    <center>
+        <VBox spacing="10.0" padding="20.0">
+            <Label text="Créer un nouveau Post" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+
+            <HBox spacing="10">
+                <Label text="Titre:" minWidth="100"/>
+                <TextField fx:id="titreField" HBox.hgrow="ALWAYS"/>
+            </HBox>
+
+            <HBox spacing="10">
+                <Label text="Contenu:" minWidth="100" alignment="TOP_LEFT"/>
+                <TextArea fx:id="contenuField" prefRowCount="5" HBox.hgrow="ALWAYS"/>
+            </HBox>
+
+            <HBox spacing="10">
+                <Label text="Auteur:" minWidth="100"/>
+                <TextField fx:id="auteurField" HBox.hgrow="ALWAYS"/>
+            </HBox>
+
+            <HBox spacing="10">
+                <Label text="Sujet (Topic):" minWidth="100"/>
+                <ComboBox fx:id="topicComboBox" HBox.hgrow="ALWAYS"/>
+            </HBox>
+
+            <HBox spacing="15" alignment="CENTER_RIGHT">
+                <Button text="Créer" onAction="#handleCreate"/>
+                <Button text="Annuler" onAction="#handleCancel"/>
+            </HBox>
+        </VBox>
+    </center>
+</BorderPane>
