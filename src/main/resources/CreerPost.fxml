@@ -8,30 +8,39 @@
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="tn.esprit.controllers.CreerPost"
       stylesheets="@style.css"
-      spacing="10">
+      spacing="10"
+      style="-fx-background-color: #FAF5F0;">
 
     <padding>
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
 
     <!-- En-tête -->
-    <HBox alignment="CENTER" style="-fx-background-color: #3498db; -fx-padding: 15;">
-        <Label text="Nouveau Post" style="-fx-text-fill: white; -fx-font-size: 24px;"/>
+    <HBox alignment="CENTER" style="-fx-background-color: #D4B8A7; -fx-padding: 15;">
+        <Label text="Nouveau Post"
+               style="-fx-text-fill: #5D4037; -fx-font-size: 24px; -fx-font-weight: bold;"/>
     </HBox>
 
     <!-- Formulaire de création de post -->
     <GridPane hgap="10" vgap="10" style="-fx-padding: 20;">
-        <Label text="Titre:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-        <TextField fx:id="titreField" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+        <Label text="Titre:" GridPane.columnIndex="0" GridPane.rowIndex="0"
+               style="-fx-text-fill: #6D4C41; -fx-font-weight: bold;"/>
+        <TextField fx:id="titreField" GridPane.columnIndex="1" GridPane.rowIndex="0"
+                   style="-fx-background-color: white; -fx-border-color: #D4B8A7;"/>
 
-        <Label text="Contenu:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <Label text="Contenu:" GridPane.columnIndex="0" GridPane.rowIndex="1"
+               style="-fx-text-fill: #6D4C41; -fx-font-weight: bold;"/>
         <TextArea fx:id="contenuField" GridPane.columnIndex="1" GridPane.rowIndex="1"
-                  prefRowCount="5" wrapText="true"/>
+                  prefRowCount="5" wrapText="true"
+                  style="-fx-background-color: white; -fx-border-color: #D4B8A7;"/>
     </GridPane>
 
     <!-- Boutons d'action -->
-    <HBox spacing="10" alignment="CENTER_RIGHT" style="-fx-padding: 10;">
-        <Button text="Annuler" onAction="#handleCancel" style="-fx-background-color: #e74c3c; -fx-text-fill: white;"/>
-        <Button text="Créer" onAction="#handleCreate" style="-fx-background-color: #2ecc71; -fx-text-fill: white;" defaultButton="true"/>
+    <HBox spacing="20" alignment="CENTER_RIGHT" style="-fx-padding: 10;">
+        <Button text="Annuler" onAction="#handleCancel"
+                style="-fx-background-color: #8D6E63; -fx-text-fill: white; -fx-font-weight: bold;"/>
+        <Button text="Créer" onAction="#handleCreate"
+                style="-fx-background-color: #A1887F; -fx-text-fill: white; -fx-font-weight: bold;"
+                defaultButton="true"/>
     </HBox>
 </VBox>

@@ -1,12 +1,15 @@
 package tn.esprit.controllers;
 
-import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import tn.esprit.entities.Post;
 import tn.esprit.services.PostService;
@@ -15,35 +18,72 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class AfficherPostController implements javafx.fxml.Initializable {
+public class AfficherPostController implements Initializable {
 
-    @FXML private TableView<Post> tableViewPosts;
-    @FXML private TableColumn<Post, String> colTitle;
-    @FXML private TableColumn<Post, String> colContent;
-    @FXML private TableColumn<Post, String> colCreatedAt;
+    @FXML
+    private FlowPane postsContainer;
 
+    private Post selectedPost = null;
     private final PostService postService = new PostService();
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        setupTableColumns();
         loadPosts();
     }
 
-    private void setupTableColumns() {
-        // Suppression de la colonne ID
-        colTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
-        colContent.setCellValueFactory(new PropertyValueFactory<>("content"));
-        colCreatedAt.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getCreatedAt().toString()));
+    public void loadPosts() {
+        postsContainer.getChildren().clear();
+        selectedPost = null;
 
-        // Ajustement automatique des colonnes
-        tableViewPosts.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        for (Post post : postService.getAll()) {
+            VBox postCard = createPostCard(post);
+            postsContainer.getChildren().add(postCard);
+        }
     }
 
-    public void loadPosts() {
-        tableViewPosts.getItems().clear();
-        tableViewPosts.setItems(postService.getAll());
+    private VBox createPostCard(Post post) {
+        VBox card = new VBox();
+        card.getStyleClass().add("post-card");
+        card.setSpacing(10);
+        card.setStyle("-fx-background-color: #F8F2EC; -fx-background-radius: 10; -fx-padding: 15;");
+        card.setPrefWidth(300);
+        card.setMaxWidth(300);
+
+        // Titre
+        Label titleLabel = new Label(post.getTitle());
+        titleLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #6D4C41;");
+        titleLabel.setWrapText(true);
+
+        // Contenu
+        Text contentText = new Text(post.getContent());
+        contentText.setWrappingWidth(280);
+        contentText.setStyle("-fx-font-size: 14px; -fx-fill: #5D4037;");
+
+        // Date
+        Label dateLabel = new Label("Créé le: " + post.getCreatedAt().toString());
+        dateLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #8D6E63;");
+
+        card.getChildren().addAll(titleLabel, contentText, dateLabel);
+
+        // Gestion de la sélection
+        card.setOnMouseClicked(event -> {
+            // Désélectionner la carte précédente
+            resetAllCardStyles();
+
+            // Sélectionner la nouvelle carte
+            card.setStyle("-fx-background-color: #E0D5CD; -fx-background-radius: 10; -fx-padding: 15; -fx-border-color: #6D4C41; -fx-border-width: 2; -fx-border-radius: 10;");
+            selectedPost = post;
+        });
+
+        return card;
+    }
+
+    private void resetAllCardStyles() {
+        for (var node : postsContainer.getChildren()) {
+            if (node instanceof VBox) {
+                node.setStyle("-fx-background-color: #F8F2EC; -fx-background-radius: 10; -fx-padding: 15;");
+            }
+        }
     }
 
     @FXML
@@ -67,14 +107,13 @@ public class AfficherPostController implements javafx.fxml.Initializable {
 
     @FXML
     private void handleUpdatePost() {
-        Post selected = tableViewPosts.getSelectionModel().getSelectedItem();
-        if (selected != null) {
+        if (selectedPost != null) {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/ModifierPost.fxml"));
                 Parent root = loader.load();
 
                 ModifierPostController controller = loader.getController();
-                controller.setPostData(selected);
+                controller.setPostData(selectedPost);
                 controller.setAfficherPostController(this);
 
                 Stage stage = new Stage();
@@ -86,26 +125,26 @@ public class AfficherPostController implements javafx.fxml.Initializable {
                 e.printStackTrace();
             }
         } else {
-            showAlert("Aucune sélection", "Veuillez sélectionner un post à modifier");
+            showAlert("Aucune sélection", "Veuillez sélectionner un post à modifier en cliquant dessus");
         }
     }
 
     @FXML
     private void handleDeletePost() {
-        Post selected = tableViewPosts.getSelectionModel().getSelectedItem();
-        if (selected != null) {
+        if (selectedPost != null) {
             Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
             confirm.setTitle("Confirmation");
-            confirm.setHeaderText("Supprimer le post : " + selected.getTitle());
+            confirm.setHeaderText("Supprimer le post : " + selectedPost.getTitle());
             confirm.setContentText("Êtes-vous sûr ?");
+            confirm.getDialogPane().setStyle("-fx-background-color: #FAF5F0;");
 
             if (confirm.showAndWait().get() == ButtonType.OK) {
-                postService.delete(selected.getId());
+                postService.delete(selectedPost.getId());
                 loadPosts();
                 showAlert("Succès", "Post supprimé !");
             }
         } else {
-            showAlert("Erreur", "Aucun post sélectionné");
+            showAlert("Erreur", "Aucun post sélectionné. Veuillez cliquer sur un post pour le sélectionner");
         }
     }
 
@@ -114,6 +153,12 @@ public class AfficherPostController implements javafx.fxml.Initializable {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
+
+        // Style pour correspondre au thème nude
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setStyle("-fx-background-color: #FAF5F0;");
+        dialogPane.lookup(".content.label").setStyle("-fx-text-fill: #5D4037;");
+
         alert.showAndWait();
     }
 }
