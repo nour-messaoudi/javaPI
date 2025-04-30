@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -7,13 +6,19 @@
 <VBox xmlns="http://javafx.com/javafx/8.0.171"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="tn.esprit.controllers.ModifierPostController"
-      spacing="10">
+      spacing="10"
+      style="-fx-background-color: #f0f0f0;">
+
     <padding>
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
 
-    <Label text="Modifier Post" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+    <!-- En-tête -->
+    <HBox alignment="CENTER" style="-fx-padding: 10; -fx-background-color: #3498db;">
+        <Label text="Modifier Post" style="-fx-text-fill: white; -fx-font-size: 24px; -fx-font-weight: bold;"/>
+    </HBox>
 
+    <!-- Formulaire pour la modification du post -->
     <GridPane hgap="10" vgap="10">
         <Label text="Titre:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
         <TextField fx:id="titreField" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
@@ -23,8 +28,9 @@
                   prefRowCount="5" wrapText="true"/>
     </GridPane>
 
-    <HBox spacing="10" alignment="CENTER_RIGHT">
-        <Button text="Annuler" onAction="#handleCancel"/>
-        <Button text="Mettre à jour" onAction="#handleUpdate"/>
+    <!-- Boutons d'action -->
+    <HBox spacing="10" alignment="CENTER_RIGHT" style="-fx-padding: 10;">
+        <Button text="Annuler" onAction="#handleCancel" style="-fx-background-color: #e74c3c; -fx-text-fill: white;"/>
+        <Button text="Mettre à jour" onAction="#handleUpdate" style="-fx-background-color: #2ecc71; -fx-text-fill: white;" defaultButton="true"/>
     </HBox>
 </VBox>

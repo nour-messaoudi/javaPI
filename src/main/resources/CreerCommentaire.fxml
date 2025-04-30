@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -6,14 +7,20 @@
 <VBox xmlns="http://javafx.com/javafx/8.0.171"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="tn.esprit.controllers.CreerCommentaire"
+      stylesheets="@style.css"
       spacing="10">
+
     <padding>
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
 
-    <Label text="Nouveau Commentaire" style="-fx-font-weight: bold;"/>
+    <!-- En-tête -->
+    <HBox alignment="CENTER" style="-fx-background-color: #3498db; -fx-padding: 15;">
+        <Label text="Nouveau Commentaire" style="-fx-text-fill: white; -fx-font-size: 24px;"/>
+    </HBox>
 
-    <GridPane hgap="10" vgap="10">
+    <!-- Formulaire de création de commentaire -->
+    <GridPane hgap="10" vgap="10" style="-fx-padding: 20;">
         <Label text="Contenu:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
         <TextField fx:id="contentField" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
 
@@ -21,8 +28,9 @@
         <TextField fx:id="postIdField" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
     </GridPane>
 
-    <HBox spacing="10" alignment="CENTER_RIGHT">
-        <Button text="Annuler" onAction="#closeWindow"/>
-        <Button text="Ajouter" onAction="#handleAdd" defaultButton="true"/>
+    <!-- Boutons d'action -->
+    <HBox spacing="10" alignment="CENTER_RIGHT" style="-fx-padding: 10;">
+        <Button text="Annuler" onAction="#closeWindow" style="-fx-background-color: #e74c3c; -fx-text-fill: white;"/>
+        <Button text="Ajouter" onAction="#handleAdd" defaultButton="true" style="-fx-background-color: #2ecc71; -fx-text-fill: white;"/>
     </HBox>
 </VBox>

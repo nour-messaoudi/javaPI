@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class CommentaireService {
     private final Connection cnx = MaConnexion.getInstance().getCnx();
 
-    public void add(Commentaire commentaire) {
+    public boolean add(Commentaire commentaire) {
         String query = "INSERT INTO commentaire (content, post_id, created_at) VALUES (?, ?, ?)";
         try (PreparedStatement pst = cnx.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             pst.setString(1, commentaire.getContent());
@@ -25,11 +25,13 @@ public class CommentaireService {
                         commentaire.setId(rs.getInt(1));
                     }
                 }
+                return true; // Retourne true si l'insertion a réussi
             }
         } catch (SQLException e) {
             System.err.println("Erreur lors de l'ajout: " + e.getMessage());
-            throw new RuntimeException("Erreur lors de l'ajout du commentaire", e);
+            e.printStackTrace();
         }
+        return false;
     }
 
     public ObservableList<Commentaire> getAll() {

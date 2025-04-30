@@ -18,7 +18,6 @@ import java.util.ResourceBundle;
 public class AfficherPostController implements javafx.fxml.Initializable {
 
     @FXML private TableView<Post> tableViewPosts;
-    @FXML private TableColumn<Post, Integer> colId;
     @FXML private TableColumn<Post, String> colTitle;
     @FXML private TableColumn<Post, String> colContent;
     @FXML private TableColumn<Post, String> colCreatedAt;
@@ -32,11 +31,14 @@ public class AfficherPostController implements javafx.fxml.Initializable {
     }
 
     private void setupTableColumns() {
-        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        // Suppression de la colonne ID
         colTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
         colContent.setCellValueFactory(new PropertyValueFactory<>("content"));
         colCreatedAt.setCellValueFactory(cellData ->
                 new SimpleStringProperty(cellData.getValue().getCreatedAt().toString()));
+
+        // Ajustement automatique des colonnes
+        tableViewPosts.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
 
     public void loadPosts() {
@@ -47,7 +49,7 @@ public class AfficherPostController implements javafx.fxml.Initializable {
     @FXML
     private void handleCreatePost() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("CreerPost.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/CreerPost.fxml"));
             Parent root = loader.load();
 
             CreerPost controller = loader.getController();
@@ -68,7 +70,7 @@ public class AfficherPostController implements javafx.fxml.Initializable {
         Post selected = tableViewPosts.getSelectionModel().getSelectedItem();
         if (selected != null) {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("ModifierPost.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/ModifierPost.fxml"));
                 Parent root = loader.load();
 
                 ModifierPostController controller = loader.getController();

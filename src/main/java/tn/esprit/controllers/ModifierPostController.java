@@ -10,6 +10,8 @@ public class ModifierPostController {
 
     @FXML private TextField titreField;
     @FXML private TextArea contenuField;
+    @FXML private Label titreError;
+    @FXML private Label contentError;
 
     private Post currentPost;
     private AfficherPostController afficherPostController;
@@ -26,10 +28,30 @@ public class ModifierPostController {
     }
 
     @FXML
+    public void initialize() {
+        // Validation en temps réel
+        titreField.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal.trim().isEmpty() || newVal.trim().matches("^\\s*$")) {
+                titreError.setText("Le titre ne peut pas être vide ou contenir uniquement des espaces");
+            } else {
+                titreError.setText("");
+            }
+        });
+
+        contenuField.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal.trim().isEmpty() || newVal.trim().matches("^\\s*$")) {
+                contentError.setText("Le contenu ne peut pas être vide ou contenir uniquement des espaces");
+            } else {
+                contentError.setText("");
+            }
+        });
+    }
+
+    @FXML
     private void handleUpdate() {
         if (validateInput()) {
-            currentPost.setTitle(titreField.getText());
-            currentPost.setContent(contenuField.getText());
+            currentPost.setTitle(titreField.getText().trim());
+            currentPost.setContent(contenuField.getText().trim());
             postService.update(currentPost);
 
             afficherPostController.loadPosts();
@@ -43,11 +65,23 @@ public class ModifierPostController {
     }
 
     private boolean validateInput() {
-        if (titreField.getText().isEmpty() || contenuField.getText().isEmpty()) {
-            showAlert("Erreur", "Tous les champs sont obligatoires");
-            return false;
+        boolean isValid = true;
+
+        // Validation du titre
+        String titre = titreField.getText().trim();
+        if (titre.isEmpty() || titre.matches("^\\s*$")) {
+            titreError.setText("Le titre ne peut pas être vide ou contenir uniquement des espaces");
+            isValid = false;
         }
-        return true;
+
+        // Validation du contenu
+        String content = contenuField.getText().trim();
+        if (content.isEmpty() || content.matches("^\\s*$")) {
+            contentError.setText("Le contenu ne peut pas être vide ou contenir uniquement des espaces");
+            isValid = false;
+        }
+
+        return isValid;
     }
 
     private void closeWindow() {

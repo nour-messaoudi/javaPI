@@ -29,7 +29,7 @@ public class ModifierCommentaireController {
     private void handleUpdate() {
         try {
             if (validateInput()) {
-                commentaire.setContent(contentField.getText());
+                commentaire.setContent(contentField.getText().trim()); // Ajout de trim()
                 commentaire.setPostId(Integer.parseInt(postIdField.getText()));
                 service.update(commentaire);
                 parentController.refresh();
@@ -41,7 +41,13 @@ public class ModifierCommentaireController {
     }
 
     private boolean validateInput() {
-        if (contentField.getText().isEmpty() || postIdField.getText().isEmpty()) {
+        // Contrôle des espaces seulement
+        if (contentField.getText().trim().isEmpty() || contentField.getText().trim().matches("^\\s*$")) {
+            showAlert("Erreur", "Le contenu ne peut pas être vide ou contenir uniquement des espaces");
+            return false;
+        }
+
+        if (postIdField.getText().isEmpty()) {
             showAlert("Erreur", "Tous les champs sont obligatoires");
             return false;
         }

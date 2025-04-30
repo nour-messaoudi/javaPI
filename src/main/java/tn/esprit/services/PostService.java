@@ -7,7 +7,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.sql.*;
-import java.time.LocalDateTime;
 
 public class PostService implements iService<Post> {
     private Connection cnx;
@@ -49,7 +48,7 @@ public class PostService implements iService<Post> {
     }
 
     @Override
-    public void delete(int id) {
+    public boolean delete(int id) {
         String req = "DELETE FROM post WHERE id = ?";
         try (PreparedStatement ps = cnx.prepareStatement(req)) {
             ps.setInt(1, id);
@@ -57,6 +56,7 @@ public class PostService implements iService<Post> {
         } catch (SQLException e) {
             System.err.println("Erreur lors de la suppression: " + e.getMessage());
         }
+        return false;
     }
 
     @Override

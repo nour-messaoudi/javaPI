@@ -17,7 +17,6 @@ import java.io.IOException;
 
 public class AfficherCommentaireController {
     @FXML private TableView<Commentaire> tableView;
-    @FXML private TableColumn<Commentaire, Integer> colId;
     @FXML private TableColumn<Commentaire, String> colContent;
     @FXML private TableColumn<Commentaire, Integer> colPostId;
     @FXML private TableColumn<Commentaire, String> colDate;
@@ -32,11 +31,14 @@ public class AfficherCommentaireController {
     }
 
     private void setupColumns() {
-        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        // Configuration des colonnes (sans la colonne ID)
         colContent.setCellValueFactory(new PropertyValueFactory<>("content"));
         colPostId.setCellValueFactory(new PropertyValueFactory<>("postId"));
         colDate.setCellValueFactory(cell ->
                 new SimpleStringProperty(cell.getValue().getCreatedAt().toString()));
+
+        // Ajustement automatique de la largeur des colonnes
+        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     }
 
     private void loadData() {
