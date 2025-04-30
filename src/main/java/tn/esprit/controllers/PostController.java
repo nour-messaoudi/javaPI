@@ -1,139 +1,93 @@
 package tn.esprit.controllers;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import tn.esprit.entities.Post;
-import tn.esprit.services.PostService;
 
 import java.io.IOException;
-import java.time.format.DateTimeFormatter;
 
 public class PostController {
     @FXML private TableView<Post> postsTable;
-    @FXML private TableColumn<Post, Integer> idCol;
-    @FXML private TableColumn<Post, String> titreCol;
-    @FXML private TableColumn<Post, String> contenuCol;
-    @FXML private TableColumn<Post, String> auteurCol;
-    @FXML private TableColumn<Post, String> dateCol;
-
-    private final PostService postService = new PostService();
-    private Stage primaryStage;
-    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-
-    public void setPrimaryStage(Stage stage) {
-        this.primaryStage = stage;
-    }
 
     @FXML
-    private void initialize() {
-        configureTableColumns();
-        refreshPosts();
-    }
-
-    private void configureTableColumns() {
-        idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
-        titreCol.setCellValueFactory(new PropertyValueFactory<>("titre"));
-        contenuCol.setCellValueFactory(new PropertyValueFactory<>("contenu"));
-        auteurCol.setCellValueFactory(new PropertyValueFactory<>("auteur"));
-        dateCol.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getDateCreation().format(dateFormatter))
-        );
-        postsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-    }
-
-    @FXML
-    private void showCreatePost() {
+    private void handleCreatePost() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/CreerPost.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/CreerPost.fxml"));
             Parent root = loader.load();
 
-            Stage dialogStage = new Stage();
-            dialogStage.setTitle("Créer un nouveau Post");
-            dialogStage.initModality(Modality.WINDOW_MODAL);
-            dialogStage.initOwner(primaryStage);
-            dialogStage.setScene(new Scene(root));
-
             CreerPost controller = loader.getController();
-            controller.setDialogStage(dialogStage);
-            controller.setPostController(this);
+            controller.setAfficherPostController((AfficherPostController) postsTable.getScene().getUserData());
 
-            dialogStage.showAndWait();
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.WINDOW_MODAL);
+            stage.setTitle("Nouveau Post");
+            stage.showAndWait();
         } catch (IOException e) {
-            showAlert("Erreur", "Impossible d'ouvrir le formulaire", e.getMessage());
+            showAlert("Erreur", "Impossible d'ouvrir le formulaire de création");
         }
     }
 
     @FXML
-    private void showEditPost() {
-        Post selectedPost = postsTable.getSelectionModel().getSelectedItem();
-        if (selectedPost != null) {
+    private void handleUpdatePost() {
+        Post selected = postsTable.getSelectionModel().getSelectedItem();
+        if (selected != null) {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/ModifierPost.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/ModifierPost.fxml"));
                 Parent root = loader.load();
 
                 ModifierPostController controller = loader.getController();
-                controller.setPostData(selectedPost);
-                controller.setPrimaryStage(primaryStage);
-                controller.setPostController(this);
+                controller.setPostData(selected);
+                controller.setAfficherPostController((AfficherPostController) postsTable.getScene().getUserData());
 
-                Stage dialogStage = new Stage();
-                dialogStage.setTitle("Modifier Post");
-                dialogStage.initModality(Modality.WINDOW_MODAL);
-                dialogStage.initOwner(primaryStage);
-                dialogStage.setScene(new Scene(root));
-                dialogStage.showAndWait();
+                Stage stage = new Stage();
+                stage.setScene(new Scene(root));
+                stage.initModality(Modality.WINDOW_MODAL);
+                stage.setTitle("Modifier Post");
+                stage.showAndWait();
             } catch (IOException e) {
-                showAlert("Erreur", "Impossible d'ouvrir l'éditeur", e.getMessage());
+                showAlert("Erreur", "Impossible d'ouvrir l'éditeur");
             }
         } else {
-            showAlert("Aucune sélection", "Veuillez sélectionner un post à modifier", "");
+            showAlert("Aucune sélection", "Veuillez sélectionner un post à modifier");
         }
     }
 
     @FXML
-    private void showDeletePost() {
-        Post selectedPost = postsTable.getSelectionModel().getSelectedItem();
-        if (selectedPost != null) {
+    private void handleDeletePost() {
+        Post selected = postsTable.getSelectionModel().getSelectedItem();
+        if (selected != null) {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/SupprimerPost.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/SupprimerPost.fxml"));
                 Parent root = loader.load();
 
                 SupprimerPostController controller = loader.getController();
-                controller.setPostData(selectedPost);
-                controller.setPostController(this);
+                controller.setPostData(selected);
+                controller.setAfficherPostController((AfficherPostController) postsTable.getScene().getUserData());
 
-                Stage dialogStage = new Stage();
-                dialogStage.setTitle("Confirmation de suppression");
-                dialogStage.initModality(Modality.WINDOW_MODAL);
-                dialogStage.initOwner(primaryStage);
-                dialogStage.setScene(new Scene(root));
-                dialogStage.showAndWait();
+                Stage stage = new Stage();
+                stage.setScene(new Scene(root));
+                stage.initModality(Modality.WINDOW_MODAL);
+                stage.setTitle("Confirmer suppression");
+                stage.showAndWait();
             } catch (IOException e) {
-                showAlert("Erreur", "Impossible d'ouvrir la confirmation", e.getMessage());
+                showAlert("Erreur", "Impossible d'ouvrir la confirmation");
             }
         } else {
-            showAlert("Aucune sélection", "Veuillez sélectionner un post à supprimer", "");
+            showAlert("Aucune sélection", "Veuillez sélectionner un post à supprimer");
         }
     }
 
-    public void refreshPosts() {
-        ObservableList<Post> posts = (ObservableList<Post>) postService.getAll();
-        postsTable.setItems(posts);
-    }
-
-    private void showAlert(String title, String header, String content) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle(title);
-        alert.setHeaderText(header);
-        alert.setContentText(content);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
         alert.showAndWait();
     }
 }

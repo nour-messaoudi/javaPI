@@ -1,47 +1,47 @@
 package tn.esprit.entities;
 
-import javafx.beans.property.*;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import java.time.LocalDateTime;
 
 public class Post {
-    private final IntegerProperty id = new SimpleIntegerProperty();
-    private final IntegerProperty topicId = new SimpleIntegerProperty();
-    private final StringProperty titre = new SimpleStringProperty();
-    private final StringProperty contenu = new SimpleStringProperty();
-    private final StringProperty auteur = new SimpleStringProperty();
-    private final ObjectProperty<LocalDateTime> dateCreation = new SimpleObjectProperty<>();
+    private final SimpleIntegerProperty id = new SimpleIntegerProperty();
+    private final SimpleStringProperty title = new SimpleStringProperty();
+    private final SimpleStringProperty content = new SimpleStringProperty();
+    private final SimpleObjectProperty<LocalDateTime> createdAt = new SimpleObjectProperty<>();
 
-    public Post(int id, int topicId, String titre, String contenu, String auteur, LocalDateTime dateCreation) {
-        this.id.set(id);
-        this.topicId.set(topicId);
-        this.titre.set(titre);
-        this.contenu.set(contenu);
-        this.auteur.set(auteur);
-        this.dateCreation.set(dateCreation);
+    // Constructeurs
+    public Post() {
+        this.createdAt.set(LocalDateTime.now());
     }
 
-    public Post() {}
+    public Post(String title, String content) {
+        this();
+        this.title.set(title);
+        this.content.set(content);
+    }
 
-    public IntegerProperty idProperty() { return id; }
-    public IntegerProperty topicIdProperty() { return topicId; }
-    public StringProperty titreProperty() { return titre; }
-    public StringProperty contenuProperty() { return contenu; }
-    public StringProperty auteurProperty() { return auteur; }
-    public ObjectProperty<LocalDateTime> dateCreationProperty() { return dateCreation; }
+    public Post(int id, String title, String content, LocalDateTime createdAt) {
+        this(title, content);
+        this.id.set(id);
+        this.createdAt.set(createdAt);
+    }
 
+    // Méthodes d'accès standard
     public int getId() { return id.get(); }
     public void setId(int id) { this.id.set(id); }
-    public int getTopicId() { return topicId.get(); }
-    public void setTopicId(int topicId) { this.topicId.set(topicId); }
-    public String getTitre() { return titre.get(); }
-    public void setTitre(String titre) { this.titre.set(titre); }
-    public String getContenu() { return contenu.get(); }
-    public void setContenu(String contenu) { this.contenu.set(contenu); }
-    public String getAuteur() { return auteur.get(); }
-    public void setAuteur(String auteur) { this.auteur.set(auteur); }
-    public LocalDateTime getDateCreation() { return dateCreation.get(); }
-    public void setDateCreation(LocalDateTime dateCreation) { this.dateCreation.set(dateCreation); }
+    public SimpleIntegerProperty idProperty() { return id; }
 
-    public void setTopic(Topic value) {
-    }
+    public String getTitle() { return title.get(); }
+    public void setTitle(String title) { this.title.set(title); }
+    public SimpleStringProperty titleProperty() { return title; }
+
+    public String getContent() { return content.get(); }
+    public void setContent(String content) { this.content.set(content); }
+    public SimpleStringProperty contentProperty() { return content; }
+
+    public LocalDateTime getCreatedAt() { return createdAt.get(); }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt.set(createdAt); }
+    public SimpleObjectProperty<LocalDateTime> createdAtProperty() { return createdAt; }
 }

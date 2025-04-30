@@ -9,43 +9,38 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class MenuPrincipalController {
-
     private Stage primaryStage;
 
-    // Méthode pour afficher les topics
-    public void handleAfficherTopics() {
-        chargerVue("/AfficherTopic.fxml");
-    }
-
-    // Méthode pour afficher les posts
     public void handleAfficherPosts() {
-        chargerVue("/AfficherPost.fxml");
+        chargerVue("/AfficherPost.fxml", "Gestion des Posts");
     }
 
-    // Méthode pour afficher les commentaires
     public void handleAfficherCommentaires() {
-        chargerVue("/AfficherCommentaire.fxml");
+        chargerVue("/AfficherCommentaire.fxml", "Gestion des Commentaires");
     }
 
-    // Méthode pour charger une vue FXML
-    private void chargerVue(String cheminFXML) {
+    private void chargerVue(String cheminFXML, String titre) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(cheminFXML));
             Parent root = loader.load();
 
-            // Récupérer le contrôleur pour initialisation si nécessaire
-            // Exemple : MenuPrincipalController controller = loader.getController();
-
             Stage stage = new Stage();
+            stage.setTitle(titre);
             stage.setScene(new Scene(root));
+
+            // Position relative à la fenêtre principale
+            if (primaryStage != null) {
+                stage.setX(primaryStage.getX() + 50);
+                stage.setY(primaryStage.getY() + 50);
+            }
+
             stage.show();
         } catch (IOException e) {
-            // Gestion de l'exception avec alerte à l'utilisateur
-            showAlert("Erreur de chargement", "Impossible de charger la vue", "Une erreur est survenue : " + e.getMessage());
+            showAlert("Erreur", "Chargement impossible",
+                    "Impossible de charger la vue: " + e.getMessage());
         }
     }
 
-    // Méthode pour afficher une alerte d'erreur
     private void showAlert(String title, String header, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
@@ -54,7 +49,6 @@ public class MenuPrincipalController {
         alert.showAndWait();
     }
 
-    // Méthode pour définir le stage principal
     public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
     }

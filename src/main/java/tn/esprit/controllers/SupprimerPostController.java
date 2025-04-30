@@ -1,45 +1,41 @@
 package tn.esprit.controllers;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 import tn.esprit.entities.Post;
 import tn.esprit.services.PostService;
 
 public class SupprimerPostController {
     @FXML private Label confirmationLabel;
-    @FXML private Button confirmerButton;
-    @FXML private Button annulerButton;
 
-    private Post post;
+    private Post currentPost;
+    private Stage dialogStage;
+    private AfficherPostController afficherPostController;
     private final PostService postService = new PostService();
-    private PostController postController;
 
     public void setPostData(Post post) {
-        this.post = post;
-        confirmationLabel.setText("Voulez-vous vraiment supprimer le post \"" + post.getTitre() + "\" ?");
+        this.currentPost = post;
+        confirmationLabel.setText("Voulez-vous vraiment supprimer le post :\n" + post.getTitle());
     }
 
-    public void setPostController(PostController postController) {
-        this.postController = postController;
+    public void setDialogStage(Stage stage) {
+        this.dialogStage = stage;
     }
 
-    @FXML
-    private void confirmerSuppression() {
-        postService.delete(post.getId());
-        postController.refreshPosts();
-        closeWindow();
+    public void setAfficherPostController(AfficherPostController controller) {
+        this.afficherPostController = controller;
     }
 
     @FXML
-    private void annulerSuppression() {
-        closeWindow();
+    private void handleConfirm() {
+        postService.delete(currentPost.getId());
+        afficherPostController.loadPosts();
+        dialogStage.close();
     }
 
-    private void closeWindow() {
-        Stage stage = (Stage) confirmerButton.getScene().getWindow();
-        stage.close();
+    @FXML
+    private void handleCancel() {
+        dialogStage.close();
     }
 }

@@ -1,91 +1,115 @@
 package tn.esprit.controllers;
 
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 import tn.esprit.entities.Post;
 import tn.esprit.services.PostService;
 
+import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
 
-public class AfficherPostController implements Initializable {
+public class AfficherPostController implements javafx.fxml.Initializable {
 
-    @FXML
-    private TableView<Post> tableViewPosts;
-    @FXML
-    private TableColumn<Post, Integer> colId;
-    @FXML
-    private TableColumn<Post, String> colTitre;
-    @FXML
-    private TableColumn<Post, String> colContenu;
-    @FXML
-    private TableColumn<Post, String> colAuteur;
-    @FXML
-    private TableColumn<Post, String> colDateCreation;
+    @FXML private TableView<Post> tableViewPosts;
+    @FXML private TableColumn<Post, Integer> colId;
+    @FXML private TableColumn<Post, String> colTitle;
+    @FXML private TableColumn<Post, String> colContent;
+    @FXML private TableColumn<Post, String> colCreatedAt;
 
-    @FXML
-    private Button btnAjouter;
-    @FXML
-    private Button btnModifier;
-    @FXML
-    private Button btnSupprimer;
+    private final PostService postService = new PostService();
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        colId.setCellValueFactory(cellData -> cellData.getValue().idProperty().asObject());
-        colTitre.setCellValueFactory(cellData -> cellData.getValue().titreProperty());
-        colContenu.setCellValueFactory(cellData -> cellData.getValue().contenuProperty());
-        colAuteur.setCellValueFactory(cellData -> cellData.getValue().auteurProperty());
-        colDateCreation.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDateCreation().toString()));
-
-        btnAjouter.setOnAction(e -> ajouterPost());
-        btnModifier.setOnAction(e -> modifierPost());
-        btnSupprimer.setOnAction(e -> supprimerPost());
-
+        setupTableColumns();
         loadPosts();
     }
 
-    private void loadPosts() {
-        PostService ps = new PostService();
-        List<Post> posts = ps.getAll();
-        ObservableList<Post> observableList = FXCollections.observableArrayList(posts);
-        tableViewPosts.setItems(observableList);
+    private void setupTableColumns() {
+        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        colTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
+        colContent.setCellValueFactory(new PropertyValueFactory<>("content"));
+        colCreatedAt.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getCreatedAt().toString()));
     }
 
-    private void ajouterPost() {
-        System.out.println("Ajouter un post...");
-        // Tu peux ici ouvrir une autre vue FXML avec formulaire
+    public void loadPosts() {
+        tableViewPosts.getItems().clear();
+        tableViewPosts.setItems(postService.getAll());
     }
 
-    private void modifierPost() {
-        Post selectedPost = tableViewPosts.getSelectionModel().getSelectedItem();
-        if (selectedPost != null) {
-            System.out.println("Modifier post : " + selectedPost.getTitre());
-            // Tu peux ouvrir une autre vue FXML pour l'édition
-        } else {
-            showAlert("Veuillez sélectionner un post à modifier.");
+    @FXML
+    private void handleCreatePost() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("CreerPost.fxml"));
+            Parent root = loader.load();
+
+            CreerPost controller = loader.getController();
+            controller.setAfficherPostController(this);
+
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Nouveau Post");
+            stage.show();
+        } catch (IOException e) {
+            showAlert("Erreur", "Impossible d'ouvrir le formulaire de création: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
-    private void supprimerPost() {
-        Post selectedPost = tableViewPosts.getSelectionModel().getSelectedItem();
-        if (selectedPost != null) {
-            PostService ps = new PostService();
-            ps.supprimer(selectedPost.getId());
-            loadPosts(); // Rafraîchir la liste
+    @FXML
+    private void handleUpdatePost() {
+        Post selected = tableViewPosts.getSelectionModel().getSelectedItem();
+        if (selected != null) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("ModifierPost.fxml"));
+                Parent root = loader.load();
+
+                ModifierPostController controller = loader.getController();
+                controller.setPostData(selected);
+                controller.setAfficherPostController(this);
+
+                Stage stage = new Stage();
+                stage.setScene(new Scene(root));
+                stage.setTitle("Modifier Post");
+                stage.show();
+            } catch (IOException e) {
+                showAlert("Erreur", "Impossible d'ouvrir l'éditeur: " + e.getMessage());
+                e.printStackTrace();
+            }
         } else {
-            showAlert("Veuillez sélectionner un post à supprimer.");
+            showAlert("Aucune sélection", "Veuillez sélectionner un post à modifier");
         }
     }
 
-    private void showAlert(String message) {
+    @FXML
+    private void handleDeletePost() {
+        Post selected = tableViewPosts.getSelectionModel().getSelectedItem();
+        if (selected != null) {
+            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+            confirm.setTitle("Confirmation");
+            confirm.setHeaderText("Supprimer le post : " + selected.getTitle());
+            confirm.setContentText("Êtes-vous sûr ?");
+
+            if (confirm.showAndWait().get() == ButtonType.OK) {
+                postService.delete(selected.getId());
+                loadPosts();
+                showAlert("Succès", "Post supprimé !");
+            }
+        } else {
+            showAlert("Erreur", "Aucun post sélectionné");
+        }
+    }
+
+    private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Information");
+        alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();

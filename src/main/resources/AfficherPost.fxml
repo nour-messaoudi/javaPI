@@ -3,23 +3,24 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
+<BorderPane xmlns="http://javafx.com/javafx/8.0.171"
+            xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="tn.esprit.controllers.AfficherPostController">
-
-    <children>
-        <TableView fx:id="tableViewPosts" layoutX="14.0" layoutY="14.0" prefHeight="400.0" prefWidth="700.0">
+    <center>
+        <TableView fx:id="tableViewPosts">
             <columns>
-                <TableColumn fx:id="colId" text="ID" prefWidth="50.0"/>
-                <TableColumn fx:id="colTitre" text="Titre" prefWidth="150.0"/>
-                <TableColumn fx:id="colContenu" text="Contenu" prefWidth="200.0"/>
-                <TableColumn fx:id="colAuteur" text="Auteur" prefWidth="150.0"/>
-                <TableColumn fx:id="colDateCreation" text="Date Création" prefWidth="150.0"/>
+                <TableColumn fx:id="colId" text="ID" />
+                <TableColumn fx:id="colTitle" text="Titre" />
+                <TableColumn fx:id="colContent" text="Contenu" />
+                <TableColumn fx:id="colCreatedAt" text="Date création" />
             </columns>
         </TableView>
-
-        <Button fx:id="btnAjouter" layoutX="14.0" layoutY="430.0" text="Ajouter"/>
-        <Button fx:id="btnModifier" layoutX="100.0" layoutY="430.0" text="Modifier"/>
-        <Button fx:id="btnSupprimer" layoutX="190.0" layoutY="430.0" text="Supprimer"/>
-    </children>
-</AnchorPane>
+    </center>
+    <bottom>
+        <HBox spacing="10" alignment="CENTER" style="-fx-padding: 10;">
+            <Button text="Ajouter" onAction="#handleCreatePost" />
+            <Button text="Modifier" onAction="#handleUpdatePost" />
+            <Button text="Supprimer" onAction="#handleDeletePost" style="-fx-text-fill: red;" />
+        </HBox>
+    </bottom>
+</BorderPane>

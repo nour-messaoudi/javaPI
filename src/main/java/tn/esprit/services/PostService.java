@@ -1,73 +1,106 @@
 package tn.esprit.services;
 
 import tn.esprit.entities.Post;
+import tn.esprit.interfaces.iService;
 import tn.esprit.util.MaConnexion;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import java.sql.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
-public class PostService {
-
+public class PostService implements iService<Post> {
     private Connection cnx;
 
     public PostService() {
         cnx = MaConnexion.getInstance().getCnx();
     }
 
-    public List<Post> getAll() {
-        List<Post> posts = new ArrayList<>();
-        String req = "SELECT * FROM post";
-
-        try {
-            Statement st = cnx.createStatement();
-            ResultSet rs = st.executeQuery(req);
-
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                int topicId = rs.getInt("topic_id");
-                String titre = rs.getString("titre");
-                String contenu = rs.getString("contenu");
-                String auteur = rs.getString("auteur");
-
-                // ⚠️ Nom correct de la colonne
-                Timestamp ts = rs.getTimestamp("dateCreation");
-                LocalDateTime dateCreation = ts != null ? ts.toLocalDateTime() : null;
-
-                Post p = new Post(id, topicId, titre, contenu, auteur, dateCreation);
-                posts.add(p);
-            }
-
-            System.out.println("Nombre de posts récupérés : " + posts.size());
-
-        } catch (SQLException e) {
-            System.err.println("Erreur dans getAll : " + e.getMessage());
-        }
-
-        return posts;
-    }
-    public void ajouter(Post newPost) {
-    }
-
-    public void delete(int id) {
-    }
-
+    @Override
     public void add(Post post) {
+        String req = "INSERT INTO post (title, content, created_at) VALUES (?, ?, ?)";
+        try (PreparedStatement ps = cnx.prepareStatement(req, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, post.getTitle());
+            ps.setString(2, post.getContent());
+            ps.setTimestamp(3, Timestamp.valueOf(post.getCreatedAt()));
+            ps.executeUpdate();
+
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) {
+                    post.setId(rs.getInt(1));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de l'ajout: " + e.getMessage());
+        }
     }
-    public void supprimer(int id) {
+
+    @Override
+    public void update(Post post) {
+        String req = "UPDATE post SET title = ?, content = ? WHERE id = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(req)) {
+            ps.setString(1, post.getTitle());
+            ps.setString(2, post.getContent());
+            ps.setInt(3, post.getId());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la mise à jour: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void delete(int id) {
         String req = "DELETE FROM post WHERE id = ?";
-        try {
-            PreparedStatement ps = cnx.prepareStatement(req);
+        try (PreparedStatement ps = cnx.prepareStatement(req)) {
             ps.setInt(1, id);
             ps.executeUpdate();
-            System.out.println("Post supprimé avec succès.");
         } catch (SQLException e) {
-            System.err.println("Erreur lors de la suppression : " + e.getMessage());
+            System.err.println("Erreur lors de la suppression: " + e.getMessage());
         }
     }
 
-    public List<Post> getAllPosts() {
-        return List.of();
+    @Override
+    public ObservableList<Post> getAll() {
+        ObservableList<Post> posts = FXCollections.observableArrayList();
+        String req = "SELECT * FROM post ORDER BY created_at DESC";
+
+        try (Statement st = cnx.createStatement();
+             ResultSet rs = st.executeQuery(req)) {
+
+            while (rs.next()) {
+                Post p = new Post(
+                        rs.getInt("id"),
+                        rs.getString("title"),
+                        rs.getString("content"),
+                        rs.getTimestamp("created_at").toLocalDateTime()
+                );
+                posts.add(p);
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la récupération: " + e.getMessage());
+        }
+        return posts;
+    }
+
+    @Override
+    public Post getById(int id) {
+        String req = "SELECT * FROM post WHERE id = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(req)) {
+            ps.setInt(1, id);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new Post(
+                            rs.getInt("id"),
+                            rs.getString("title"),
+                            rs.getString("content"),
+                            rs.getTimestamp("created_at").toLocalDateTime()
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la récupération: " + e.getMessage());
+        }
+        return null;
     }
 }

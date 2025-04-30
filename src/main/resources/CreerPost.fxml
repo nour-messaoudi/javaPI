@@ -4,35 +4,27 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="tn.esprit.controllers.CreerPost">
-    <center>
-        <VBox spacing="10.0" padding="20.0">
-            <Label text="Créer un nouveau Post" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+<VBox xmlns="http://javafx.com/javafx/8.0.171"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="tn.esprit.controllers.CreerPost"
+      spacing="10">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
 
-            <HBox spacing="10">
-                <Label text="Titre:" minWidth="100"/>
-                <TextField fx:id="titreField" HBox.hgrow="ALWAYS"/>
-            </HBox>
+    <Label text="Nouveau Post" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
 
-            <HBox spacing="10">
-                <Label text="Contenu:" minWidth="100" alignment="TOP_LEFT"/>
-                <TextArea fx:id="contenuField" prefRowCount="5" HBox.hgrow="ALWAYS"/>
-            </HBox>
+    <GridPane hgap="10" vgap="10">
+        <Label text="Titre:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+        <TextField fx:id="titreField" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
 
-            <HBox spacing="10">
-                <Label text="Auteur:" minWidth="100"/>
-                <TextField fx:id="auteurField" HBox.hgrow="ALWAYS"/>
-            </HBox>
+        <Label text="Contenu:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <TextArea fx:id="contenuField" GridPane.columnIndex="1" GridPane.rowIndex="1"
+                  prefRowCount="5" wrapText="true"/>
+    </GridPane>
 
-            <HBox spacing="10">
-                <Label text="Sujet (Topic):" minWidth="100"/>
-                <ComboBox fx:id="topicComboBox" HBox.hgrow="ALWAYS"/>
-            </HBox>
-
-            <HBox spacing="15" alignment="CENTER_RIGHT">
-                <Button text="Créer" onAction="#handleCreate"/>
-                <Button text="Annuler" onAction="#handleCancel"/>
-            </HBox>
-        </VBox>
-    </center>
-</BorderPane>
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button text="Annuler" onAction="#handleCancel"/>
+        <Button text="Créer" onAction="#handleCreate"/>
+    </HBox>
+</VBox>

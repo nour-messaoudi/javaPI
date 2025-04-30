@@ -4,85 +4,54 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import tn.esprit.entities.Post;
-import tn.esprit.entities.Topic;
 import tn.esprit.services.PostService;
-import tn.esprit.services.TopicService;
-
-import java.util.List;
 
 public class CreerPost {
 
     @FXML private TextField titreField;
     @FXML private TextArea contenuField;
-    @FXML private TextField auteurField;
-    @FXML private ComboBox<Topic> topicComboBox;
 
-    private Stage dialogStage;
+    private AfficherPostController afficherPostController;
     private final PostService postService = new PostService();
-    private final TopicService topicService = new TopicService();
 
-    public void setDialogStage(Stage stage) {
-        this.dialogStage = stage;
-    }
-
-    @FXML
-    private void initialize() {
-        List<Topic> topics = topicService.getAllTopics();
-        topicComboBox.getItems().addAll(topics);
+    public void setAfficherPostController(AfficherPostController controller) {
+        this.afficherPostController = controller;
     }
 
     @FXML
     private void handleCreate() {
         if (validateInput()) {
-            Post newPost = new Post();
-            newPost.setTitre(titreField.getText());
-            newPost.setContenu(contenuField.getText());
-            newPost.setAuteur(auteurField.getText());
-            newPost.setTopic(topicComboBox.getValue());
+            Post newPost = new Post(titreField.getText(), contenuField.getText());
+            postService.add(newPost);
 
-            postService.ajouter(newPost);
-            dialogStage.close();
+            afficherPostController.loadPosts();
+            closeWindow();
         }
     }
 
     @FXML
     private void handleCancel() {
-        dialogStage.close();
+        closeWindow();
     }
 
     private boolean validateInput() {
-        StringBuilder errors = new StringBuilder();
-
-        if (titreField.getText().isEmpty()) {
-            errors.append("- Titre obligatoire\n");
-        }
-        if (contenuField.getText().isEmpty()) {
-            errors.append("- Contenu obligatoire\n");
-        }
-        if (auteurField.getText().isEmpty()) {
-            errors.append("- Auteur obligatoire\n");
-        }
-        if (topicComboBox.getValue() == null) {
-            errors.append("- Sujet (Topic) obligatoire\n");
-        }
-
-        if (errors.length() > 0) {
-            showAlert("Erreur de validation", errors.toString());
+        if (titreField.getText().isEmpty() || contenuField.getText().isEmpty()) {
+            showAlert("Erreur", "Tous les champs sont obligatoires");
             return false;
         }
         return true;
     }
 
-    private void showAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.initOwner(dialogStage);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
+    private void closeWindow() {
+        Stage stage = (Stage) titreField.getScene().getWindow();
+        stage.close();
     }
 
-    public void setPostController(PostController postController) {
-        // Si besoin : postController.refreshPosts() après ajout
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

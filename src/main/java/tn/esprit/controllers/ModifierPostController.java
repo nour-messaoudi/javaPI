@@ -10,49 +10,56 @@ public class ModifierPostController {
 
     @FXML private TextField titreField;
     @FXML private TextArea contenuField;
-    @FXML private TextField auteurField;
 
     private Post currentPost;
-    private Stage primaryStage;
+    private AfficherPostController afficherPostController;
     private final PostService postService = new PostService();
 
     public void setPostData(Post post) {
         this.currentPost = post;
-        titreField.setText(post.getTitre());
-        contenuField.setText(post.getContenu());
-        auteurField.setText(post.getAuteur());
+        titreField.setText(post.getTitle());
+        contenuField.setText(post.getContent());
     }
 
-    public void setPrimaryStage(Stage stage) {
-        this.primaryStage = stage;
+    public void setAfficherPostController(AfficherPostController controller) {
+        this.afficherPostController = controller;
     }
 
     @FXML
     private void handleUpdate() {
+        if (validateInput()) {
+            currentPost.setTitle(titreField.getText());
+            currentPost.setContent(contenuField.getText());
+            postService.update(currentPost);
 
+            afficherPostController.loadPosts();
+            closeWindow();
+        }
     }
 
     @FXML
     private void handleCancel() {
-        primaryStage.close();
+        closeWindow();
     }
 
     private boolean validateInput() {
-        if (titreField.getText().isEmpty() || contenuField.getText().isEmpty() || auteurField.getText().isEmpty()) {
-            showAlert("Erreur", "Tous les champs sont obligatoires !");
+        if (titreField.getText().isEmpty() || contenuField.getText().isEmpty()) {
+            showAlert("Erreur", "Tous les champs sont obligatoires");
             return false;
         }
         return true;
     }
 
-    private void showAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
+    private void closeWindow() {
+        Stage stage = (Stage) titreField.getScene().getWindow();
+        stage.close();
     }
 
-    public void setPostController(PostController postController) {
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

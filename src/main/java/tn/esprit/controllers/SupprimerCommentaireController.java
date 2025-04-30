@@ -1,7 +1,6 @@
 package tn.esprit.controllers;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
@@ -14,31 +13,33 @@ public class SupprimerCommentaireController {
     @FXML private Button annulerButton;
 
     private Commentaire commentaire;
-    private final CommentaireService commentaireService = new CommentaireService();
-    private CommentaireController commentaireController;
+    private final CommentaireService service = new CommentaireService();
+    private AfficherCommentaireController afficherController;
 
-    public void setCommentaireData(Commentaire commentaire) {
+    public void setCommentaire(Commentaire commentaire) {
         this.commentaire = commentaire;
-        confirmationLabel.setText("Voulez-vous vraiment supprimer ce commentaire : \"" + commentaire.getContenu() + "\" ?");
+        // Adapter le message de confirmation pour correspondre à l'attribut content
+        confirmationLabel.setText("Voulez-vous vraiment supprimer ce commentaire : \"" + commentaire.getContent() + "\" ?");
     }
 
-    public void setCommentaireController(CommentaireController commentaireController) {
-        this.commentaireController = commentaireController;
+    public void setAfficherCommentaireController(AfficherCommentaireController controller) {
+        this.afficherController = controller;
     }
 
     @FXML
     private void confirmerSuppression() {
-        commentaireService.delete(commentaire.getId());
-        commentaireController.refreshCommentaires();
-        closeWindow();
+        // Suppression du commentaire par son ID
+        service.delete(commentaire.getId());
+        afficherController.refresh();  // Mise à jour de l'affichage
+        close();
     }
 
     @FXML
     private void annulerSuppression() {
-        closeWindow();
+        close();
     }
 
-    private void closeWindow() {
+    private void close() {
         Stage stage = (Stage) confirmerButton.getScene().getWindow();
         stage.close();
     }
