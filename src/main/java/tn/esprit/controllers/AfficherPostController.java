@@ -16,18 +16,50 @@ import tn.esprit.services.PostService;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.ResourceBundle;
 
 public class AfficherPostController implements Initializable {
 
     @FXML
     private FlowPane postsContainer;
+    @FXML
+    private TextField searchField;
+    @FXML
+    private DatePicker dateFilter;
+    @FXML
+    private ComboBox<String> sortComboBox;
 
     private Post selectedPost = null;
     private final PostService postService = new PostService();
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        // Initialiser le ComboBox de tri
+        sortComboBox.getItems().addAll("Plus récent", "Plus ancien");
+        sortComboBox.getSelectionModel().selectFirst();
+
+        // Écouteurs pour les filtres
+        searchField.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal.isEmpty()) {
+                loadPosts();
+            } else {
+                searchPosts();
+            }
+        });
+
+        dateFilter.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                filterByDate();
+            } else {
+                loadPosts();
+            }
+        });
+
+        sortComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
+            sortPosts();
+        });
+
         loadPosts();
     }
 
@@ -36,6 +68,43 @@ public class AfficherPostController implements Initializable {
         selectedPost = null;
 
         for (Post post : postService.getAll()) {
+            VBox postCard = createPostCard(post);
+            postsContainer.getChildren().add(postCard);
+        }
+    }
+
+    private void searchPosts() {
+        postsContainer.getChildren().clear();
+        selectedPost = null;
+
+        String keyword = searchField.getText();
+        for (Post post : postService.searchByTitle(keyword)) {
+            VBox postCard = createPostCard(post);
+            postsContainer.getChildren().add(postCard);
+        }
+    }
+
+    private void filterByDate() {
+        postsContainer.getChildren().clear();
+        selectedPost = null;
+
+        LocalDate date = dateFilter.getValue();
+        if (date != null) {
+            for (Post post : postService.filterByDate(date)) {
+                VBox postCard = createPostCard(post);
+                postsContainer.getChildren().add(postCard);
+            }
+        }
+    }
+
+    private void sortPosts() {
+        postsContainer.getChildren().clear();
+        selectedPost = null;
+
+        String sortOption = sortComboBox.getValue();
+        boolean ascending = "Plus ancien".equals(sortOption);
+
+        for (Post post : postService.getAllSorted(ascending)) {
             VBox postCard = createPostCard(post);
             postsContainer.getChildren().add(postCard);
         }

@@ -7,6 +7,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.sql.*;
+import java.time.LocalDate;
 
 public class PostService implements iService<Post> {
     private Connection cnx;
@@ -53,10 +54,11 @@ public class PostService implements iService<Post> {
         try (PreparedStatement ps = cnx.prepareStatement(req)) {
             ps.setInt(1, id);
             ps.executeUpdate();
+            return true;
         } catch (SQLException e) {
             System.err.println("Erreur lors de la suppression: " + e.getMessage());
+            return false;
         }
-        return false;
     }
 
     @Override
@@ -102,5 +104,77 @@ public class PostService implements iService<Post> {
             System.err.println("Erreur lors de la récupération: " + e.getMessage());
         }
         return null;
+    }
+
+    public ObservableList<Post> searchByTitle(String keyword) {
+        ObservableList<Post> posts = FXCollections.observableArrayList();
+        String req = "SELECT * FROM post WHERE LOWER(title) LIKE LOWER(?) ORDER BY created_at DESC";
+
+        try (PreparedStatement ps = cnx.prepareStatement(req)) {
+            ps.setString(1, "%" + keyword + "%");
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Post p = new Post(
+                            rs.getInt("id"),
+                            rs.getString("title"),
+                            rs.getString("content"),
+                            rs.getTimestamp("created_at").toLocalDateTime()
+                    );
+                    posts.add(p);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la recherche: " + e.getMessage());
+        }
+        return posts;
+    }
+
+    public ObservableList<Post> filterByDate(LocalDate date) {
+        ObservableList<Post> posts = FXCollections.observableArrayList();
+        String req = "SELECT * FROM post WHERE DATE(created_at) = ? ORDER BY created_at DESC";
+
+        try (PreparedStatement ps = cnx.prepareStatement(req)) {
+            ps.setDate(1, Date.valueOf(date));
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Post p = new Post(
+                            rs.getInt("id"),
+                            rs.getString("title"),
+                            rs.getString("content"),
+                            rs.getTimestamp("created_at").toLocalDateTime()
+                    );
+                    posts.add(p);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors du filtrage: " + e.getMessage());
+        }
+        return posts;
+    }
+
+    public ObservableList<Post> getAllSorted(boolean ascending) {
+        ObservableList<Post> posts = FXCollections.observableArrayList();
+        String req = ascending ?
+                "SELECT * FROM post ORDER BY created_at ASC" :
+                "SELECT * FROM post ORDER BY created_at DESC";
+
+        try (Statement st = cnx.createStatement();
+             ResultSet rs = st.executeQuery(req)) {
+
+            while (rs.next()) {
+                Post p = new Post(
+                        rs.getInt("id"),
+                        rs.getString("title"),
+                        rs.getString("content"),
+                        rs.getTimestamp("created_at").toLocalDateTime()
+                );
+                posts.add(p);
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors du tri: " + e.getMessage());
+        }
+        return posts;
     }
 }

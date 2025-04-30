@@ -18,7 +18,7 @@ public class MainAPP extends Application {
             controller.setPrimaryStage(primaryStage);
 
             Scene scene = new Scene(root, 800, 600);
-            primaryStage.setTitle("Gestion des Forum");
+            primaryStage.setTitle("Gestion de Forum");
             primaryStage.setScene(scene);
             primaryStage.show();
         } catch (Exception e) {

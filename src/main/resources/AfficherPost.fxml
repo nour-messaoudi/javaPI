@@ -10,21 +10,40 @@
             fx:controller="tn.esprit.controllers.AfficherPostController"
             stylesheets="@style.css">
 
-    <!-- En-tête avec titre -->
+    <!-- En-tête avec titre et filtres -->
     <top>
-        <HBox alignment="CENTER" style="-fx-background-color: #F3E9DC; -fx-padding: 20;">
-            <Label text="Gestion des Posts"
-                   style="-fx-text-fill: #6D4C41; -fx-font-size: 28px; -fx-font-weight: bold;"/>
-        </HBox>
+        <VBox style="-fx-background-color: #F3E9DC;">
+            <HBox alignment="CENTER" style="-fx-padding: 20;">
+                <Label text="Gestion des Posts"
+                       style="-fx-text-fill: #6D4C41; -fx-font-size: 28px; -fx-font-weight: bold;"/>
+            </HBox>
+
+            <!-- Barre de recherche et filtres -->
+            <HBox spacing="20" style="-fx-padding: 10 20 20 20; -fx-background-color: #E8D5C0;" alignment="CENTER_LEFT">
+                <Label text="Recherche:" style="-fx-text-fill: #6D4C41; -fx-font-weight: bold;"/>
+
+                <TextField fx:id="searchField" promptText="Rechercher par titre..."
+                           style="-fx-background-color: white; -fx-border-color: #D4B8A7; -fx-pref-width: 200;"/>
+
+                <Label text="Date:" style="-fx-text-fill: #6D4C41; -fx-font-weight: bold;"/>
+                <DatePicker fx:id="dateFilter" style="-fx-background-color: white; -fx-border-color: #D4B8A7;"/>
+
+                <Label text="Trier par:" style="-fx-text-fill: #6D4C41; -fx-font-weight: bold;"/>
+                <ComboBox fx:id="sortComboBox" style="-fx-background-color: white; -fx-border-color: #D4B8A7; -fx-pref-width: 120;"/>
+
+                <Button text="Réinitialiser" onAction="#loadPosts"
+                        style="-fx-background-color: #BCAAA4; -fx-text-fill: #5D4037; -fx-font-weight: bold;"/>
+            </HBox>
+        </VBox>
     </top>
 
-    <!-- Remplacer le ScrollPane existant par ceci -->
+    <!-- Contenu principal -->
     <center>
         <ScrollPane fitToWidth="true" style="-fx-background: #FAF5F0;">
             <FlowPane fx:id="postsContainer"
                       hgap="20" vgap="20"
                       style="-fx-padding: 20;"
-                      prefWrapLength="1600"/> <!-- 5 cartes * 300px + 4 gaps * 20px -->
+                      prefWrapLength="1600"/>
         </ScrollPane>
     </center>
 
