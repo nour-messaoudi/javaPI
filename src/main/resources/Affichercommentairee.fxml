@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.esprit.controllers.AfficherCommentaireControllere">
+    <center>
+        <TableView fx:id="commentsTableView" style="-fx-background-color: #FAF5F0;">
+            <columns>
+                <TableColumn fx:id="contentColumn" text="Contenu" />
+                <TableColumn fx:id="dateColumn" text="Date de création" />
+            </columns>
+        </TableView>
+    </center>
+
+    <bottom>
+        <VBox spacing="10" style="-fx-padding: 15; -fx-background-color: #F3E9DC;">
+            <TextArea fx:id="commentInputField" promptText="Écrire un commentaire..." style="-fx-background-color: white; -fx-border-color: #D4B8A7;" />
+            <Button onAction="#handleAddComment" text="Ajouter un commentaire" style="-fx-background-color: #D4B8A7; -fx-text-fill: #5D4037; -fx-font-weight: bold;" />
+        </VBox>
+    </bottom>
+</BorderPane>
