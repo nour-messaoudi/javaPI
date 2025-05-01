@@ -29,17 +29,28 @@ public class AfficherPostController implements Initializable {
     private DatePicker dateFilter;
     @FXML
     private ComboBox<String> sortComboBox;
+    @FXML
+    private Button prevButton;
+    @FXML
+    private Button nextButton;
+    @FXML
+    private Label pageInfoLabel;
+
+    private static final int POSTS_PER_PAGE = 3; // Define how many posts to show per page
+    private int currentPage = 1;
+    private int totalPages = 1;
+    private int totalPosts = 0;
 
     private Post selectedPost = null;
     private final PostService postService = new PostService();
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Initialiser le ComboBox de tri
+        // Initialize the sort combo box
         sortComboBox.getItems().addAll("Plus récent", "Plus ancien");
         sortComboBox.getSelectionModel().selectFirst();
 
-        // Écouteurs pour les filtres
+        // Listeners for filters
         searchField.textProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal.isEmpty()) {
                 loadPosts();
@@ -60,17 +71,30 @@ public class AfficherPostController implements Initializable {
             sortPosts();
         });
 
-        loadPosts();
+        loadPosts();  // Load posts when the page is initialized
     }
 
     public void loadPosts() {
         postsContainer.getChildren().clear();
         selectedPost = null;
 
-        for (Post post : postService.getAll()) {
+        // Get all posts from the PostService
+        var allPosts = postService.getAll();
+        totalPosts = allPosts.size();
+        totalPages = (int) Math.ceil((double) totalPosts / POSTS_PER_PAGE);
+
+        // Get the posts to display for the current page
+        int startIndex = (currentPage - 1) * POSTS_PER_PAGE;
+        int endIndex = Math.min(startIndex + POSTS_PER_PAGE, totalPosts);
+        var postsToShow = allPosts.subList(startIndex, endIndex);
+
+        // Display the posts for the current page
+        for (Post post : postsToShow) {
             VBox postCard = createPostCard(post);
             postsContainer.getChildren().add(postCard);
         }
+
+        updatePaginationControls();
     }
 
     private void searchPosts() {
@@ -78,10 +102,20 @@ public class AfficherPostController implements Initializable {
         selectedPost = null;
 
         String keyword = searchField.getText();
-        for (Post post : postService.searchByTitle(keyword)) {
+        var searchedPosts = postService.searchByTitle(keyword);
+        totalPosts = searchedPosts.size();
+        totalPages = (int) Math.ceil((double) totalPosts / POSTS_PER_PAGE);
+
+        int startIndex = (currentPage - 1) * POSTS_PER_PAGE;
+        int endIndex = Math.min(startIndex + POSTS_PER_PAGE, totalPosts);
+        var postsToShow = searchedPosts.subList(startIndex, endIndex);
+
+        for (Post post : postsToShow) {
             VBox postCard = createPostCard(post);
             postsContainer.getChildren().add(postCard);
         }
+
+        updatePaginationControls();
     }
 
     private void filterByDate() {
@@ -90,11 +124,21 @@ public class AfficherPostController implements Initializable {
 
         LocalDate date = dateFilter.getValue();
         if (date != null) {
-            for (Post post : postService.filterByDate(date)) {
+            var filteredPosts = postService.filterByDate(date);
+            totalPosts = filteredPosts.size();
+            totalPages = (int) Math.ceil((double) totalPosts / POSTS_PER_PAGE);
+
+            int startIndex = (currentPage - 1) * POSTS_PER_PAGE;
+            int endIndex = Math.min(startIndex + POSTS_PER_PAGE, totalPosts);
+            var postsToShow = filteredPosts.subList(startIndex, endIndex);
+
+            for (Post post : postsToShow) {
                 VBox postCard = createPostCard(post);
                 postsContainer.getChildren().add(postCard);
             }
         }
+
+        updatePaginationControls();
     }
 
     private void sortPosts() {
@@ -104,10 +148,20 @@ public class AfficherPostController implements Initializable {
         String sortOption = sortComboBox.getValue();
         boolean ascending = "Plus ancien".equals(sortOption);
 
-        for (Post post : postService.getAllSorted(ascending)) {
+        var sortedPosts = postService.getAllSorted(ascending);
+        totalPosts = sortedPosts.size();
+        totalPages = (int) Math.ceil((double) totalPosts / POSTS_PER_PAGE);
+
+        int startIndex = (currentPage - 1) * POSTS_PER_PAGE;
+        int endIndex = Math.min(startIndex + POSTS_PER_PAGE, totalPosts);
+        var postsToShow = sortedPosts.subList(startIndex, endIndex);
+
+        for (Post post : postsToShow) {
             VBox postCard = createPostCard(post);
             postsContainer.getChildren().add(postCard);
         }
+
+        updatePaginationControls();
     }
 
     private VBox createPostCard(Post post) {
@@ -118,12 +172,12 @@ public class AfficherPostController implements Initializable {
         card.setPrefWidth(300);
         card.setMaxWidth(300);
 
-        // Titre
+        // Title
         Label titleLabel = new Label(post.getTitle());
         titleLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #6D4C41;");
         titleLabel.setWrapText(true);
 
-        // Contenu
+        // Content
         Text contentText = new Text(post.getContent());
         contentText.setWrappingWidth(280);
         contentText.setStyle("-fx-font-size: 14px; -fx-fill: #5D4037;");
@@ -134,24 +188,47 @@ public class AfficherPostController implements Initializable {
 
         card.getChildren().addAll(titleLabel, contentText, dateLabel);
 
-        // Gestion de la sélection
+        // Handle selection
         card.setOnMouseClicked(event -> {
-            // Désélectionner la carte précédente
-            resetAllCardStyles();
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/AfficherCommentairee.fxml"));
+                Parent root = loader.load();
 
-            // Sélectionner la nouvelle carte
-            card.setStyle("-fx-background-color: #E0D5CD; -fx-background-radius: 10; -fx-padding: 15; -fx-border-color: #6D4C41; -fx-border-width: 2; -fx-border-radius: 10;");
-            selectedPost = post;
+                AfficherCommentaireControllere controller = loader.getController();
+                controller.setSelectedPost(post);
+
+                Stage stage = new Stage();
+                stage.setScene(new Scene(root));
+                stage.setTitle("Commentaires de: " + post.getTitle());
+                stage.show();
+            } catch (IOException e) {
+                showAlert("Erreur", "Impossible d'ouvrir les commentaires: " + e.getMessage());
+                e.printStackTrace();
+            }
         });
 
         return card;
     }
 
-    private void resetAllCardStyles() {
-        for (var node : postsContainer.getChildren()) {
-            if (node instanceof VBox) {
-                node.setStyle("-fx-background-color: #F8F2EC; -fx-background-radius: 10; -fx-padding: 15;");
-            }
+    private void updatePaginationControls() {
+        pageInfoLabel.setText("Page " + currentPage + " / " + totalPages);
+        prevButton.setDisable(currentPage <= 1);
+        nextButton.setDisable(currentPage >= totalPages);
+    }
+
+    @FXML
+    private void goToPreviousPage() {
+        if (currentPage > 1) {
+            currentPage--;
+            loadPosts();
+        }
+    }
+
+    @FXML
+    private void goToNextPage() {
+        if (currentPage < totalPages) {
+            currentPage++;
+            loadPosts();
         }
     }
 
@@ -216,21 +293,6 @@ public class AfficherPostController implements Initializable {
             showAlert("Erreur", "Aucun post sélectionné. Veuillez cliquer sur un post pour le sélectionner");
         }
     }
-    @FXML
-    private void handleShowStats() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/StatsView.fxml"));
-            Parent root = loader.load();
-
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Statistiques");
-            stage.show();
-        } catch (IOException e) {
-            showAlert("Erreur", "Impossible d'ouvrir les statistiques");
-        }
-    }
-
 
     private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -238,12 +300,11 @@ public class AfficherPostController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(message);
 
-        // Style pour correspondre au thème nude
+        // Style for the alert dialog
         DialogPane dialogPane = alert.getDialogPane();
         dialogPane.setStyle("-fx-background-color: #FAF5F0;");
         dialogPane.lookup(".content.label").setStyle("-fx-text-fill: #5D4037;");
 
         alert.showAndWait();
     }
-
 }

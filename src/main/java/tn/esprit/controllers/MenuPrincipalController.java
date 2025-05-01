@@ -16,8 +16,9 @@ public class MenuPrincipalController {
     }
 
     public void handleAfficherCommentaires() {
-        chargerVue("/AfficherCommentaire.fxml", "Gestion des Commentaires");
-    }
+        chargerVue("/AfficherCommentaire.fxml", "Gestion des Commentaires");}
+
+    public void handleAfficherStats() {chargerVue("/StatsView.fxml", "Statistiques");}
 
     private void chargerVue(String cheminFXML, String titre) {
         try {

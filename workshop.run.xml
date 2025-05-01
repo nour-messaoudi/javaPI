@@ -1,7 +1,8 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="workshop" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="tn.esprit.MainAPP" />
-    <module name="workshop" />
+    <module name="ForumApp" />
+    <option name="PROGRAM_PARAMETERS" value="$MAVEN_REPOSITORY$--module-path &quot;C:\Users\Mootaz\.m2\repository\org\openjfx\javafx-controls\21.0.2&quot; --add-modules javafx.controls,javafx.fxml" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

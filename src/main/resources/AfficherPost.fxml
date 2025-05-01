@@ -1,38 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
-<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns="http://javafx.com/javafx/8.0.171"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="tn.esprit.controllers.AfficherPostController"
-            stylesheets="@style.css">
+<BorderPane prefHeight="581.0" prefWidth="943.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.esprit.controllers.AfficherPostController">
 
     <!-- En-tête avec titre et filtres -->
     <top>
         <VBox style="-fx-background-color: #F3E9DC;">
             <HBox alignment="CENTER" style="-fx-padding: 20;">
-                <Label text="Gestion des Posts"
-                       style="-fx-text-fill: #6D4C41; -fx-font-size: 28px; -fx-font-weight: bold;"/>
+                <Label style="-fx-text-fill: #6D4C41; -fx-font-size: 28px; -fx-font-weight: bold;" text="Gestion des Posts" />
             </HBox>
 
             <!-- Barre de recherche et filtres -->
-            <HBox spacing="20" style="-fx-padding: 10 20 20 20; -fx-background-color: #E8D5C0;" alignment="CENTER_LEFT">
-                <Label text="Recherche:" style="-fx-text-fill: #6D4C41; -fx-font-weight: bold;"/>
+            <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-padding: 10 20 20 20; -fx-background-color: #E8D5C0;">
+                <Label style="-fx-text-fill: #6D4C41; -fx-font-weight: bold;" text="Recherche:" />
 
-                <TextField fx:id="searchField" promptText="Rechercher par titre..."
-                           style="-fx-background-color: white; -fx-border-color: #D4B8A7; -fx-pref-width: 200;"/>
+                <TextField fx:id="searchField" promptText="Rechercher par titre..." style="-fx-background-color: white; -fx-border-color: #D4B8A7; -fx-pref-width: 200;" />
 
-                <Label text="Date:" style="-fx-text-fill: #6D4C41; -fx-font-weight: bold;"/>
-                <DatePicker fx:id="dateFilter" style="-fx-background-color: white; -fx-border-color: #D4B8A7;"/>
+                <Label style="-fx-text-fill: #6D4C41; -fx-font-weight: bold;" text="Date:" />
+                <DatePicker fx:id="dateFilter" style="-fx-background-color: white; -fx-border-color: #D4B8A7;" />
 
-                <Label text="Trier par:" style="-fx-text-fill: #6D4C41; -fx-font-weight: bold;"/>
-                <ComboBox fx:id="sortComboBox" style="-fx-background-color: white; -fx-border-color: #D4B8A7; -fx-pref-width: 120;"/>
+                <Label style="-fx-text-fill: #6D4C41; -fx-font-weight: bold;" text="Trier par:" />
+                <ComboBox fx:id="sortComboBox" style="-fx-background-color: white; -fx-border-color: #D4B8A7; -fx-pref-width: 120;" />
 
-                <Button text="Réinitialiser" onAction="#loadPosts"
-                        style="-fx-background-color: #BCAAA4; -fx-text-fill: #5D4037; -fx-font-weight: bold;"/>
+                <Button onAction="#loadPosts" style="-fx-background-color: #BCAAA4; -fx-text-fill: #5D4037; -fx-font-weight: bold;" text="Réinitialiser" />
             </HBox>
         </VBox>
     </top>
@@ -40,22 +40,26 @@
     <!-- Contenu principal -->
     <center>
         <ScrollPane fitToWidth="true" style="-fx-background: #FAF5F0;">
-            <FlowPane fx:id="postsContainer"
-                      hgap="20" vgap="20"
-                      style="-fx-padding: 20;"
-                      prefWrapLength="1600"/>
+            <FlowPane fx:id="postsContainer" hgap="20" prefWrapLength="1600" style="-fx-padding: 20;" vgap="20" />
         </ScrollPane>
     </center>
 
-    <!-- Pied de page avec boutons d'action -->
+    <!-- Pied de page avec boutons de pagination et d'action -->
     <bottom>
         <HBox alignment="CENTER" spacing="30" style="-fx-padding: 20; -fx-background-color: #F3E9DC;">
-            <Button text="Ajouter" onAction="#handleCreatePost"
-                    style="-fx-background-color: #D4B8A7; -fx-text-fill: #5D4037; -fx-font-weight: bold;"/>
-            <Button text="Modifier" onAction="#handleUpdatePost"
-                    style="-fx-background-color: #D4B8A7; -fx-text-fill: #5D4037; -fx-font-weight: bold;"/>
-            <Button text="Supprimer" onAction="#handleDeletePost"
-                    style="-fx-background-color: #D4B8A7; -fx-text-fill: #5D4037; -fx-font-weight: bold;"/>
+            <!-- Pagination -->
+            <HBox spacing="20">
+                <Button fx:id="prevButton" onAction="#goToPreviousPage" style="-fx-background-color: #D4B8A7; -fx-text-fill: #5D4037; -fx-font-weight: bold;" text="Précédent" />
+                <Label fx:id="pageInfoLabel" style="-fx-text-fill: #6D4C41; -fx-font-size: 16px;" text="Page 1 / 1" />
+                <Button fx:id="nextButton" onAction="#goToNextPage" style="-fx-background-color: #D4B8A7; -fx-text-fill: #5D4037; -fx-font-weight: bold;" text="Suivant" />
+            </HBox>
+
+            <!-- Action buttons -->
+            <HBox spacing="30">
+                <Button onAction="#handleCreatePost" style="-fx-background-color: #D4B8A7; -fx-text-fill: #5D4037; -fx-font-weight: bold;" text="Ajouter" />
+                <Button onAction="#handleUpdatePost" style="-fx-background-color: #D4B8A7; -fx-text-fill: #5D4037; -fx-font-weight: bold;" text="Modifier" />
+                <Button onAction="#handleDeletePost" style="-fx-background-color: #D4B8A7; -fx-text-fill: #5D4037; -fx-font-weight: bold;" text="Supprimer" />
+            </HBox>
         </HBox>
     </bottom>
 </BorderPane>

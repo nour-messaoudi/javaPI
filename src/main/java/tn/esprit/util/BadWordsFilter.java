@@ -23,12 +23,10 @@ public class BadWordsFilter {
                     .build();
 
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            logDebug("API Response", response.body());
-
             return parseApiResponse(response.body());
         } catch (Exception e) {
-            logError("API Error", e.toString());
-            return false; // Ne pas bloquer l'application en cas d'erreur
+            // logError("API Error", e.toString()); // You can log errors if needed but not for every call
+            return false; // Don't block the application on error
         }
     }
 
@@ -37,16 +35,8 @@ public class BadWordsFilter {
             JsonObject response = JsonParser.parseString(json).getAsJsonObject();
             return response.get("has_profanity").getAsBoolean();
         } catch (Exception e) {
-            logError("JSON Parsing Error", e.toString());
+            // logError("JSON Parsing Error", e.toString()); // You can log errors if needed but not for every call
             return false;
         }
-    }
-
-    private static void logDebug(String context, String message) {
-        System.out.println("[BadWordsFilter] " + context + ": " + message);
-    }
-
-    private static void logError(String context, String message) {
-        System.err.println("[BadWordsFilter] ERROR in " + context + ": " + message);
     }
 }

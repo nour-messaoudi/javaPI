@@ -1,22 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.layout.VBox?>
+
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-
-<VBox xmlns="http://javafx.com/javafx/8.0.171"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="tn.esprit.controllers.MenuPrincipalController"
-      spacing="20"
-      alignment="CENTER"
-      stylesheets="@style.css">
+<VBox alignment="CENTER" prefHeight="302.0" prefWidth="320.0" spacing="20" stylesheets="@style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.esprit.controllers.MenuPrincipalController">
 
     <HBox alignment="CENTER" styleClass="header">
         <Label text="Bienvenue dans le Forum" />
     </HBox>
 
-    <Button text="Gestion des Posts" onAction="#handleAfficherPosts" styleClass="button" />
-    <Button text="Gestion des Commentaires" onAction="#handleAfficherCommentaires" styleClass="button" />
+    <Button onAction="#handleAfficherPosts" styleClass="button" text="Gestion des Posts" />
+    <Button onAction="#handleAfficherCommentaires" styleClass="button" text="Gestion des Commentaires" />
+   <Button id="statbutton" onAction="#handleAfficherStats" styleClass="button" text="Statistiques" />
 </VBox>

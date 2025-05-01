@@ -3,9 +3,14 @@ package tn.esprit.controllers;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import javafx.geometry.Pos;
 import tn.esprit.entities.Commentaire;
 import tn.esprit.services.CommentaireService;
+import tn.esprit.util.BadWordsFilter;  // Import your custom BadWordsFilter
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -19,7 +24,8 @@ public class CommentaireController {
     @FXML private Button ajouterBtn;
 
     private final CommentaireService commentaireService = new CommentaireService();
-
+    private int currentPage = 0; // Current page for pagination
+    private final int pageSize = 50; // Number of comments per page (adjust as needed)
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     @FXML
@@ -28,6 +34,7 @@ public class CommentaireController {
         dateCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(
                 data.getValue().getCreatedAt().format(formatter))
         );
+        loadCommentaires();  // Initial loading of comments
     }
 
     @FXML
@@ -35,6 +42,12 @@ public class CommentaireController {
         String contenu = commentaireInput.getText().trim();
         if (contenu.isEmpty()) {
             showAlert("Champ vide", "Veuillez saisir un commentaire.");
+            return;
+        }
+
+        // Check for bad words in the content
+        if (BadWordsFilter.containsBadWords(contenu)) {
+            showCustomBadWordsWindow();
             return;
         }
 
@@ -49,12 +62,13 @@ public class CommentaireController {
         commentaireService.add(commentaire);
 
         commentaireInput.clear();
-        loadCommentaires();
+        loadCommentaires();  // Refresh the list of comments after adding a new one
     }
 
     private void loadCommentaires() {
+        // Fetch limited comments for pagination
         ObservableList<Commentaire> commentaires = FXCollections.observableArrayList(
-                commentaireService.getCommentairesParPost(1)  // Remplacer l'id ici par celui du post réel
+                commentaireService.getCommentsByPostId(1, pageSize, currentPage * pageSize)  // Fetch 50 comments per page
         );
         commentaireTable.setItems(commentaires);
     }
@@ -67,7 +81,42 @@ public class CommentaireController {
         alert.showAndWait();
     }
 
+    private void showCustomBadWordsWindow() {
+        Stage stage = new Stage();
+        stage.setTitle("Contenu Inapproprié");
+
+        VBox layout = new VBox(10);
+        layout.setAlignment(Pos.CENTER);
+
+        Label label = new Label("Votre texte contient des mots inappropriés !");
+        layout.getChildren().add(label);
+
+        Button closeButton = new Button("Fermer");
+        closeButton.setOnAction(e -> stage.close());
+        layout.getChildren().add(closeButton);
+
+        Scene scene = new Scene(layout, 300, 150);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    // Method to go to the next page of comments (pagination)
+    @FXML
+    private void nextPage() {
+        currentPage++;
+        loadCommentaires();  // Load the next page of comments
+    }
+
+    // Method to go to the previous page of comments (pagination)
+    @FXML
+    private void previousPage() {
+        if (currentPage > 0) {
+            currentPage--;
+            loadCommentaires();  // Load the previous page of comments
+        }
+    }
+
     public void refreshCommentaires() {
-        loadCommentaires();  // Recharger les commentaires
+        loadCommentaires();  // Reload the comments manually (if needed)
     }
 }
