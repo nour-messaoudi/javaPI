@@ -5,6 +5,7 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import tn.esprit.entities.Post;
 import tn.esprit.services.PostService;
+import tn.esprit.util.MaConnexion;
 
 public class ModifierPostController {
 
@@ -49,14 +50,17 @@ public class ModifierPostController {
 
     @FXML
     private void handleUpdate() {
-        if (validateInput()) {
-            currentPost.setTitle(titreField.getText().trim());
-            currentPost.setContent(contenuField.getText().trim());
-            postService.update(currentPost);
+        String titre = titreField.getText().trim();
+        String content = contenuField.getText().trim();
 
-            afficherPostController.loadPosts();
-            closeWindow();
-        }
+        if (!validateInput()) return;
+        if (!validateContent(titre) || !validateContent(content)) return;
+
+        currentPost.setTitle(titre);
+        currentPost.setContent(content);
+        postService.update(currentPost);
+        afficherPostController.loadPosts();
+        closeWindow();
     }
 
     @FXML
@@ -95,5 +99,12 @@ public class ModifierPostController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+    private boolean validateContent(String text) {
+        if (MaConnexion.containsBadWords(text)) {
+            showAlert("Contenu inapproprié", "Votre texte contient des mots inappropriés");
+            return false;
+        }
+        return true;
     }
 }

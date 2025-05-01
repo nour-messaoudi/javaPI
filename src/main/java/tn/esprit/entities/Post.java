@@ -1,25 +1,26 @@
 package tn.esprit.entities;
 
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import java.time.LocalDateTime;
+import tn.esprit.util.BadWordsFilter;
 
 public class Post {
-    private final SimpleIntegerProperty id = new SimpleIntegerProperty();
-    private final SimpleStringProperty title = new SimpleStringProperty();
-    private final SimpleStringProperty content = new SimpleStringProperty();
-    private final SimpleObjectProperty<LocalDateTime> createdAt = new SimpleObjectProperty<>();
+    private final IntegerProperty id = new SimpleIntegerProperty();
+    private final StringProperty title = new SimpleStringProperty();
+    private final StringProperty content = new SimpleStringProperty();
+    private final ObjectProperty<LocalDateTime> createdAt = new SimpleObjectProperty<>();
+    private final ObservableList<Commentaire> commentaires = FXCollections.observableArrayList();
 
-    // Constructeurs
     public Post() {
         this.createdAt.set(LocalDateTime.now());
     }
 
     public Post(String title, String content) {
         this();
-        this.title.set(title);
-        this.content.set(content);
+        this.setTitle(title); // Utilisation du setter pour la validation
+        this.setContent(content);
     }
 
     public Post(int id, String title, String content, LocalDateTime createdAt) {
@@ -28,20 +29,54 @@ public class Post {
         this.createdAt.set(createdAt);
     }
 
-    // Méthodes d'accès standard
+    // Property Accessors
+    public IntegerProperty idProperty() { return id; }
+    public StringProperty titleProperty() { return title; }
+    public StringProperty contentProperty() { return content; }
+    public ObjectProperty<LocalDateTime> createdAtProperty() { return createdAt; }
+    public ObservableList<Commentaire> getCommentaires() { return commentaires; }
+
+    // Getters & Setters avec validation
     public int getId() { return id.get(); }
     public void setId(int id) { this.id.set(id); }
-    public SimpleIntegerProperty idProperty() { return id; }
 
     public String getTitle() { return title.get(); }
-    public void setTitle(String title) { this.title.set(title); }
-    public SimpleStringProperty titleProperty() { return title; }
+    public void setTitle(String title) {
+        if (title == null || title.trim().isEmpty()) {
+            throw new IllegalArgumentException("Le titre ne peut pas être vide");
+        }
+        if (BadWordsFilter.containsBadWords(title)) {
+            throw new IllegalArgumentException("Titre inapproprié détecté");
+        }
+        this.title.set(title);
+    }
 
     public String getContent() { return content.get(); }
-    public void setContent(String content) { this.content.set(content); }
-    public SimpleStringProperty contentProperty() { return content; }
+    public void setContent(String content) {
+        if (content == null || content.trim().isEmpty()) {
+            throw new IllegalArgumentException("Le contenu ne peut pas être vide");
+        }
+        if (BadWordsFilter.containsBadWords(content)) {
+            throw new IllegalArgumentException("Contenu inapproprié détecté");
+        }
+        this.content.set(content);
+    }
 
     public LocalDateTime getCreatedAt() { return createdAt.get(); }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt.set(createdAt); }
-    public SimpleObjectProperty<LocalDateTime> createdAtProperty() { return createdAt; }
+
+    // Gestion des commentaires
+    public void addCommentaire(Commentaire commentaire) {
+        commentaires.add(commentaire);
+        commentaire.setPostId(this.getId());
+    }
+
+    public void removeCommentaire(Commentaire commentaire) {
+        commentaires.remove(commentaire);
+        commentaire.setPostId(0);
+    }
+
+    public int getCommentCount() {
+        return commentaires.size();
+    }
 }

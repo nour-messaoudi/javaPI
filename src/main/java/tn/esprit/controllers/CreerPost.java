@@ -5,6 +5,7 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import tn.esprit.entities.Post;
 import tn.esprit.services.PostService;
+import tn.esprit.util.MaConnexion;
 
 public class CreerPost {
 
@@ -42,16 +43,16 @@ public class CreerPost {
 
     @FXML
     private void handleCreate() {
-        if (validateInput()) {
-            Post newPost = new Post(
-                    titreField.getText().trim(),
-                    contenuField.getText().trim()
-            );
-            postService.add(newPost);
+        String titre = titreField.getText().trim();
+        String content = contenuField.getText().trim();
 
-            afficherPostController.loadPosts();
-            closeWindow();
-        }
+        if (!validateInput()) return;
+        if (!validateContent(titre) || !validateContent(content)) return;
+
+        Post newPost = new Post(titre, content);
+        postService.add(newPost);
+        afficherPostController.loadPosts();
+        closeWindow();
     }
 
     @FXML
@@ -90,5 +91,12 @@ public class CreerPost {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+    private boolean validateContent(String text) {
+        if (MaConnexion.containsBadWords(text)) {
+            showAlert("Contenu inapproprié", "Votre texte contient des mots inappropriés");
+            return false;
+        }
+        return true;
     }
 }

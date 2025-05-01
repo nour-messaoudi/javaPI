@@ -6,6 +6,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import tn.esprit.entities.Commentaire;
 import tn.esprit.services.CommentaireService;
+import tn.esprit.util.MaConnexion;
 
 public class ModifierCommentaireController {
     @FXML private TextField contentField;
@@ -28,15 +29,18 @@ public class ModifierCommentaireController {
     @FXML
     private void handleUpdate() {
         try {
-            if (validateInput()) {
-                commentaire.setContent(contentField.getText().trim()); // Ajout de trim()
-                commentaire.setPostId(Integer.parseInt(postIdField.getText()));
-                service.update(commentaire);
-                parentController.refresh();
-                closeWindow();
-            }
+            String content = contentField.getText().trim();
+
+            if (!validateInput()) return;
+            if (!validateContent(content)) return;
+
+            commentaire.setContent(content);
+            commentaire.setPostId(Integer.parseInt(postIdField.getText()));
+            service.update(commentaire);
+            parentController.refresh();
+            closeWindow();
         } catch (Exception e) {
-            showAlert("Erreur", "Une erreur est survenue: " + e.getMessage());
+            showAlert("Erreur", e.getMessage());
         }
     }
 
@@ -73,5 +77,12 @@ public class ModifierCommentaireController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+    private boolean validateContent(String text) {
+        if (MaConnexion.containsBadWords(text)) {
+            showAlert("Contenu inapproprié", "Votre texte contient des mots inappropriés");
+            return false;
+        }
+        return true;
     }
 }

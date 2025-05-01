@@ -216,6 +216,21 @@ public class AfficherPostController implements Initializable {
             showAlert("Erreur", "Aucun post sélectionné. Veuillez cliquer sur un post pour le sélectionner");
         }
     }
+    @FXML
+    private void handleShowStats() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/StatsView.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Statistiques");
+            stage.show();
+        } catch (IOException e) {
+            showAlert("Erreur", "Impossible d'ouvrir les statistiques");
+        }
+    }
+
 
     private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -230,4 +245,5 @@ public class AfficherPostController implements Initializable {
 
         alert.showAndWait();
     }
+
 }
