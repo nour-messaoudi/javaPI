@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="workshop" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="tn.esprit.MainAPP" />
+    <module name="workshop" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
